@@ -1,4 +1,4 @@
-# Project Name
+# StudyBuddy Backend
 This is StudyBuddy Server Application with MongoDB
 
 ## Getting Started
