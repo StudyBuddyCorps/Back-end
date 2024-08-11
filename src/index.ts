@@ -1,15 +1,17 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import config from "./config";
+import router from "./router";
 
-dotenv.config();
 const app = express();
-const port = process.env.PORT || 3000;
+const port = config.port || 3000;
 
 mongoose
-  .connect(process.env.MONGO_URI as string, {})
+  .connect(config.database, {})
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
+
+app.use("/api", router);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("This is change!!");
