@@ -5,4 +5,5 @@ dotenv.config();
 export default {
   port: parseInt(process.env.PORT as string, 10) as number,
   database: process.env.DATABASE_URI as string,
+  jwtSecret: process.env.SECRET_KEY as string,
 };
