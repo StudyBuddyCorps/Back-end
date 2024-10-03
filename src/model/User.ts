@@ -15,7 +15,7 @@ const UserSchema = new Schema({
   // goal: { type: String },
   // isRandom: { type: Boolean, default: false },
   // userPhrase: { type: String },
-  // myGroup: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
+  myGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
 });
 
 export default mongoose.model("User", UserSchema);
