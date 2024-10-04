@@ -1,16 +1,65 @@
 import User from "../model/User";
-import { IUser } from "../interface/DTO/user/IUser";
+import { SignupLocalRequest } from "../interface/DTO/user/SignupDTO";
+import bcrypt from "bcrypt";
+import jwt from "../util/jwt";
 
-const createUser = (data: IUser) => {
-  const user = new User(data);
-  return user.save();
+const createUser = async (signupUser: SignupLocalRequest) => {
+  try {
+    const existUser = await User.findOne({ email: signupUser.email });
+    if (existUser) {
+      throw new Error("User already exists");
+    }
+
+    const saltRounds = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(signupUser.password, saltRounds);
+
+    const user = new User({
+      email: signupUser.email,
+      provider: "local",
+      nickname: signupUser.nickname,
+      password: hashedPassword,
+    });
+    const savedUser = await user.save();
+
+    const accessToken = jwt.sign(savedUser._id.toString(), savedUser.nickname);
+    const refreshToken = jwt.refresh();
+
+    return { accessToken: accessToken, refreshToken: refreshToken };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to create user");
+  }
 };
 
-const findUser = (email: string) => {
-  return User.findOne({ email });
+const getUserByID = async (userID: string) => {
+  try {
+    const user = await User.findById({ userID });
+    if (!user) {
+      throw new Error("User not Found");
+    }
+    return user;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to find user by ID");
+  }
+};
+
+const deleteUser = async (email: string) => {
+  try {
+    const deleteResult = await User.deleteOne({ email });
+    if (deleteResult.deletedCount == 0) {
+      throw new Error("User not Found or already deleted.");
+    }
+
+    return { message: "User successfully deleted" };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 export default {
   createUser,
-  findUser,
+  getUserByID,
+  deleteUser,
 };
