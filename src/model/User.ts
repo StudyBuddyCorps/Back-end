@@ -17,7 +17,7 @@ const UserSchema = new Schema({
   profileUrl: { type: String },
   goal: { type: Number, default: 3600 },
   phrase: PhraseSchema,
-  myGroup: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
+  myGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
 });
 
 export default mongoose.model("User", UserSchema);

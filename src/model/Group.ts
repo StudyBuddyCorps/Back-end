@@ -17,7 +17,7 @@ const groupSchema = new Schema<GroupDocument>({
   createdAt: { type: Date, default: Date.now },
   members: [{ 
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
-    role: { type: String, default: 'member', require: true }
+    role: { type: String, default: 'member', required: true }
   }]
 });
 

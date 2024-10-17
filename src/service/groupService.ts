@@ -27,6 +27,17 @@ const searchGroupsByName = async (name: string) => {
 };
 
 const addMemberToGroup = async (groupId: string, userId: string, role: 'member') => {
+  const group = await Group.findById(groupId);
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  // 이미 존재하는 userId인지 확인
+  const memberExists = group.members.some(member => member.userId.toString() === userId);
+  if (memberExists) {
+    throw new Error('User is already a member of this group');
+  }
+  
   const updatedGroup = await Group.findByIdAndUpdate(
     groupId,
     { $push: { members: { userId, role } } },
