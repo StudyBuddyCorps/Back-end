@@ -8,20 +8,37 @@ const sign = (userId: string, nickname: string) => {
   return accessToken;
 };
 
-const verify = (accessToken: string) => {
+const verify = (token: string) => {
   try {
-    let decoded: any = jwt.verify(accessToken, config.jwtSecret);
+    let decoded: any = jwt.verify(token, config.jwtSecret);
     return {
       ok: true,
-      id: decoded.id,
-      nickname: decoded.nickname,
+      decoded: decoded,
     };
   } catch (error) {
-    return {
-      ok: false,
-      message:
-        error instanceof Error ? error.message : "Unknown error occurred",
-    };
+    if (error instanceof Error) {
+      if (error.message === "jwt expired") {
+        return {
+          ok: false,
+          type: -1,
+          message: error.message,
+        };
+      } else if (error.message === "invalid token") {
+        return {
+          ok: false,
+          type: -2,
+          message: error.message,
+        };
+      } else {
+        return {
+          ok: false,
+          type: -3,
+          message: error.message,
+        };
+      }
+    } else {
+      console.log(error);
+    }
   }
 };
 
