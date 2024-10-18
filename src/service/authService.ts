@@ -4,9 +4,8 @@ import bcrypt from "bcrypt";
 import axios from "axios";
 import qs from "qs";
 import config from "../config";
-import { getKakaoUserInfo } from "../util/social";
+import { getGoogleUserInfo, getKakaoUserInfo } from "../util/social";
 import jwt from "../util/jwt";
-import { refreshTokenRequest } from "../interface/DTO/auth/RefreshTokenDTO";
 
 const localLogin = async (loginLocal: LoginLocalRequest) => {
   try {
@@ -22,9 +21,11 @@ const localLogin = async (loginLocal: LoginLocalRequest) => {
       }
     }
 
-    // create Token
+    // create Token and save
     const accessToken = jwt.sign(user._id.toString(), user.nickname);
     const refreshToken = jwt.refresh();
+    user.refreshToken = refreshToken;
+    await user.save();
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -59,19 +60,26 @@ const kakaoLogin = async (code: string) => {
       provider: "kakao",
     });
 
+    const refreshToken = jwt.refresh();
+
     if (!existUser) {
+      // 유저가 존재하지 않는 경우
       const user = new User({
         email: kakaoUserInfo.email,
         provider: "kakao",
         nickname: kakaoUserInfo.nickname,
         profileUrl: kakaoUserInfo.profileUrl,
+        refreshToken: refreshToken,
       });
       existUser = await user.save();
+    } else {
+      // 유저가 존재하는 경우
+      existUser.refreshToken = refreshToken;
+      await existUser.save();
     }
 
     // create Token
     const accessToken = jwt.sign(existUser._id.toString(), existUser.nickname);
-    const refreshToken = jwt.refresh();
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -80,40 +88,60 @@ const kakaoLogin = async (code: string) => {
   }
 };
 
-const refreshToken = async (old: refreshTokenRequest) => {
-  const decodedAccessToken = jwt.verify(old.accessToken);
-  const decodedRefrehToken = jwt.verify(old.refreshToken);
+const googleLogin = async (code: string) => {
+  // get AccessToken using code
+  const tokenResponse = await axios({
+    method: "POST",
+    url: "https://oauth2.googleapis.com/token",
+    headers: {
+      "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+    },
+    data: qs.stringify({
+      grant_type: "authorization_code",
+      client_id: config.google_ID,
+      client_secret: config.google_password,
+      redirect_uri: config.google_uri,
+      code: code,
+    }),
+  });
 
-  if (
-    decodedAccessToken.ok === false &&
-    decodedAccessToken.message === "jwt expired"
-  ) {
-    // accessToken 만료된 경우
-    if (decodedRefrehToken.ok === false) {
-      // refresh도 만료 -> 재로그인
-      return { status: 401, message: "No authorized" };
+  const token = tokenResponse.data.access_token;
+  const userInfo = await getGoogleUserInfo(token); // get KaKao User Info using token
+
+  try {
+    let existUser = await User.findOne({
+      email: userInfo.email,
+      provider: "google",
+    });
+
+    const refreshToken = jwt.refresh();
+    if (!existUser) {
+      const user = new User({
+        email: userInfo.email,
+        provider: "google",
+        nickname: userInfo.nickname,
+        profileUrl: userInfo.profileUrl,
+        refreshToken: refreshToken,
+      });
+      existUser = await user.save();
     } else {
-      // refresh는 만료 X -> 새로운 access Token 발급
-      const newAccessToken = jwt.sign(
-        decodedRefrehToken.id,
-        decodedRefrehToken.nickname
-      );
-      return {
-        status: 200,
-        accessToken: newAccessToken,
-      };
+      // 유저가 존재하는 경우
+      existUser.refreshToken = refreshToken;
+      await existUser.save();
     }
-  } else {
-    // accessToken 만료 안 됨
-    return {
-      status: 400,
-      message: "Access Token is not expired",
-    };
+
+    // create Token
+    const accessToken = jwt.sign(existUser._id.toString(), existUser.nickname);
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 };
 
 export default {
   localLogin,
   kakaoLogin,
-  refreshToken,
+  googleLogin,
 };

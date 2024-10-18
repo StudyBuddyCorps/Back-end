@@ -12,8 +12,8 @@ const authJWT = async (req: Request, res: Response, next: NextFunction) => {
           .json({ status: 401, message: "No token provided" });
 
       const decodedToken = jwtHandler.verify(accessToken);
-      if (decodedToken.ok) {
-        const userId: string = decodedToken.id;
+      if (decodedToken?.ok) {
+        const userId: string = decodedToken.decoded.id;
         const existingUser = await userService.getUserByID(userId);
         if (!existingUser)
           return res
@@ -25,7 +25,7 @@ const authJWT = async (req: Request, res: Response, next: NextFunction) => {
       } else {
         res.status(401).json({
           status: 401,
-          message: decodedToken.message,
+          message: decodedToken?.message,
         });
       }
     }
