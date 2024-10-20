@@ -14,16 +14,18 @@ const createUser = async (signupUser: SignupLocalRequest) => {
     const saltRounds = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(signupUser.password, saltRounds);
 
+    const refreshToken = jwt.refresh();
+
     const user = new User({
       email: signupUser.email,
       provider: "local",
       nickname: signupUser.nickname,
       password: hashedPassword,
+      refreshToken: refreshToken,
     });
     const savedUser = await user.save();
 
     const accessToken = jwt.sign(savedUser._id.toString(), savedUser.nickname);
-    const refreshToken = jwt.refresh();
 
     return { accessToken: accessToken, refreshToken: refreshToken };
   } catch (error) {
@@ -42,6 +44,18 @@ const getUserByID = async (userID: string) => {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to find user by ID");
+  }
+};
+
+const getUserByRefresh = async (refreshToken: string) => {
+  try {
+    const user = await User.findOne({ refreshToken: refreshToken });
+    if (!user) {
+      throw new Error("User not Found");
+    }
+    return user;
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -77,5 +91,6 @@ export default {
   createUser,
   addGroupToUser,
   getUserByID,
+  getUserByRefresh,
   deleteUser,
 };

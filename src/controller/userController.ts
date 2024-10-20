@@ -18,12 +18,19 @@ const signUp = async (req: Request, res: Response) => {
     res.cookie("refreshToken", newUser.refreshToken, {
       httpOnly: true,
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      // secure: true,
+      maxAge: 365 * 24 * 60 * 60 * 1000,
     });
-    return res.status(200).json({ accessToken: newUser.accessToken });
+
+    res.cookie("accessToken", newUser.accessToken, {
+      httpOnly: false,
+      //secure: true,
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    return res.status(200).json({ ok: true });
   } catch (error) {
-    return res.status(500).json({ message: "Signup failed" });
+    return res.status(500).json({ ok: false, error: error });
   }
 };
 

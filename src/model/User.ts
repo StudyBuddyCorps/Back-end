@@ -13,6 +13,7 @@ const UserSchema = new Schema({
     enum: ["local", "google", "kakao"],
     default: "local",
   },
+  refreshToken: { type: String },
   nickname: { type: String, required: true },
   profileUrl: { type: String },
   goal: { type: Number, default: 3600 },

@@ -10,5 +10,10 @@ export default {
   // kakao
   kakao_ID: process.env.KAKAO_CLIENT_ID as string,
   kakao_password: process.env.KAKAO_CLIENT_PASSWORD as string,
-  kakao_uri: process.env.REDIRECT_URI as string,
+  kakao_uri: process.env.KAKAO_REDIRECT_URI as string,
+
+  // google
+  google_ID: process.env.GOOGLE_CLIENT_ID as string,
+  google_password: process.env.GOOGLE_CLIENT_PASSWORD as string,
+  google_uri: process.env.GOOGLE_REDIRECT_URI as string,
 };
