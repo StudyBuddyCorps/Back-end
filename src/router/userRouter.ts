@@ -47,5 +47,9 @@ router.post(
 //router.get('/profile', authJWT, authController.editProfile);
 router.get("/:userId", userController.getUserById);
 router.get("/", userController.getAllUsers);
+router.post("/nickname/check", userController.checkNicknameDuplicate);
+router.put("/nickname", userController.updateNickname);
+router.put("/phrase", userController.updatePhrase);
+router.put("/goal", userController.updateGoal);
 
 export default router;

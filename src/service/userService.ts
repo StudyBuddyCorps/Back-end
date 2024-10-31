@@ -92,6 +92,47 @@ const getAllUsers = async () => {
   return await User.find({}, "nickname profileUrl"); 
 };
 
+const checkNicknameDuplicate = async (nickname: string, userId?: string) => {
+  const users = await User.find({});
+  const isDuplicate = users.some(user => user.nickname === nickname && user._id.toString() !== userId);
+  return isDuplicate;
+};
+
+const updateNickname = async (userId: string, nickname: string) => {
+  const isDuplicate = await checkNicknameDuplicate(nickname, userId);
+  if (isDuplicate) {
+    throw new Error("Nickname is already in use");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  user.nickname = nickname;
+  await user.save();
+};
+
+const updatePhrase = async (userId: string, phrase: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  
+  if (user.phrase) {
+    user.phrase.content = phrase;
+  } else {
+    user.phrase = { isRandom: true, content: phrase };
+  }
+  
+  await user.save();
+};
+
+const updateGoal = async (userId: string, goal: number) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  user.goal = goal;
+  await user.save();
+};
+
 export default {
   createUser,
   addGroupToUser,
@@ -99,4 +140,8 @@ export default {
   getUserByRefresh,
   deleteUser,
   getAllUsers,
+  checkNicknameDuplicate,
+  updateNickname,
+  updatePhrase,
+  updateGoal,
 };
