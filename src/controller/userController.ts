@@ -9,7 +9,8 @@ const signUp = async (req: Request, res: Response) => {
 
   const error = validationResult(req);
   if (!error.isEmpty()) {
-    return res.status(400).json({ error: error.array() });
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
   }
 
   try {
@@ -28,9 +29,9 @@ const signUp = async (req: Request, res: Response) => {
       maxAge: 15 * 60 * 1000,
     });
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ success: true });
   } catch (error) {
-    return res.status(500).json({ ok: false, error: error });
+    return res.status(500).json({ success: false, error: error });
   }
 };
 

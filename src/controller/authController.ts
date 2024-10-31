@@ -12,7 +12,8 @@ const login = async (req: Request, res: Response) => {
 
   const error = validationResult(req);
   if (!error.isEmpty()) {
-    return res.status(400).json({ error: error.array() });
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
   }
 
   try {
@@ -43,7 +44,8 @@ const login = async (req: Request, res: Response) => {
 const kakaoLogin = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
-    return res.status(400).json({ error: error.array() });
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
   }
 
   const { code } = req.query;
@@ -77,7 +79,8 @@ const kakaoLogin = async (req: Request, res: Response) => {
 const googleLogin = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
-    return res.status(400).json({ error: error.array() });
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
   }
 
   const { code } = req.query;
@@ -111,7 +114,8 @@ const googleLogin = async (req: Request, res: Response) => {
 const getNewToken = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
-    return res.status(400).json({ error: error.array() });
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
   }
 
   const accessToken = req.headers.authorization?.split("Bearer ")[1];
@@ -150,7 +154,8 @@ const getNewToken = async (req: Request, res: Response) => {
 const logout = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
-    return res.status(400).json({ error: error.array() });
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
   }
 
   try {
