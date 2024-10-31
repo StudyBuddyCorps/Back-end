@@ -4,7 +4,7 @@ interface IStudyRoomDocument extends Document {
   userId: mongoose.Schema.Types.ObjectId;
   roomType: 'normal' | 'pomodoro';
   studyMate: {
-    image: string;
+    image: 'Noti';
     voice: 'voice1' | 'voice2' | 'voice3' | 'mute';
   };
   assistantTone: 'default' | 'genius-nerd' | 'scholar' | 'fairy';
@@ -20,7 +20,7 @@ const studyRoomSchema: Schema<IStudyRoomDocument> = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   roomType: { type: String, enum: ['normal', 'pomodoro'], default: 'normal' },
   studyMate: {
-    image: { type: String, required: true },
+    image: {type: String, enum: ['Noti'], default: 'Noti', required: true },
     voice: { type: String, enum: ['voice1', 'voice2', 'voice3', 'mute'], default: 'mute' }
   },
   assistantTone: { type: String, enum: ['default', 'genius-nerd', 'scholar', 'fairy'], default: 'default' },

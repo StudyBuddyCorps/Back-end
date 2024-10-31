@@ -3,7 +3,7 @@ export interface IStudyRoom {
   userId: string; 
   roomType: 'normal' | 'pomodoro';
   studyMate: {
-    image: string;
+    image: 'Noti';
     voice: 'voice1' | 'voice2' | 'voice3' | 'mute';
   };
   assistantTone: 'default' | 'genius-nerd' | 'scholar' | 'fairy';
