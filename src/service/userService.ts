@@ -36,7 +36,8 @@ const createUser = async (signupUser: SignupLocalRequest) => {
 
 const getUserByID = async (userID: string) => {
   try {
-    const user = await User.findById({ userID });
+    const objectId = new mongoose.Types.ObjectId(userID);
+    const user = await User.findById(objectId);
     if (!user) {
       throw new Error("User not Found");
     }
