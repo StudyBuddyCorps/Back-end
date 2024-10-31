@@ -49,6 +49,7 @@ const getUserById = async (req: Request, res: Response) => {
       imgUrl: user.profileUrl,
       goal: user.goal,
       defaultSettings: user.defaultSettings,
+      phrase: user.phrase,
     });
   } catch (error) {
     console.error("Error retrieving user:", error);
