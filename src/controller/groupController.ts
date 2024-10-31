@@ -93,6 +93,47 @@ const getGroupIdByName = async (req: Request, res: Response) => {
   }
 };
 
+const searchMemberInGroup = async (req: Request, res: Response) => {
+  try {
+    const { groupId } = req.params;
+    const { searchTerm } = req.query;
+
+    if (!searchTerm) {
+      return res.status(400).json({ message: "Search term is required" });
+    }
+
+    const group = await groupService.getGroupById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    const members = await Promise.all(
+      group.members.map(async (member) => {
+        const user = await userService.getUserByID(member.userId);
+        return user;
+      })
+    );
+
+    const filteredMembers = members
+      .filter(
+        (member) =>
+          member &&
+          member.nickname.toLowerCase().includes((searchTerm as string).toLowerCase())
+      )
+      .map((member) => ({
+        userId: member._id,
+        name: member.nickname,
+        imgUrl: member.profileUrl,
+        role: group.members.find((m) => m.userId.toString() === member._id.toString())?.role,
+      }));
+
+    return res.status(200).json(filteredMembers);
+  } catch (error) {
+    console.error("Error searching member in group:", error);
+    return res.status(500).json({ message: "Error searching member in group" });
+  }
+};
+
 export default {
   createGroup,
   getMyGroups,
@@ -100,4 +141,5 @@ export default {
   addMemberToGroup,
   getGroupById,
   getGroupIdByName,
+  searchMemberInGroup,
 };

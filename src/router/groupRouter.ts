@@ -9,5 +9,6 @@ router.get('/search', groupController.searchGroups);  // 그룹 검색
 router.post('/addmember', groupController.addMemberToGroup);  // 그룹에 멤버 추가
 router.get("/:groupId", groupController.getGroupById);  // 특정 그룹 조회
 router.get("/name/:groupName", groupController.getGroupIdByName);  // groupname으로 그룹 조회
+router.get("/:groupId/members/search", groupController.searchMemberInGroup);  // 그룹에 속한 멤버 검색
 
 export default router;
