@@ -5,13 +5,13 @@ import mongoose from 'mongoose';
 
 export const studyRoomService = {
   // 공부방 생성
-  async createStudyRoom(userId: string, roomData: any) {
+  async createStudyRoom(userId: string, roomType: string, studyMate: any, assistantTone: string, cameraAccess: boolean) {
     const newRoom = new StudyRoomModel({
       userId,
-      roomType: roomData.roomType,
-      studyMate: roomData.studyMate,
-      assistantTone: roomData.assistantTone,
-      cameraAccess: roomData.cameraAccess,
+      roomType,
+      studyMate,
+      assistantTone,
+      cameraAccess,
       startTime: new Date(),
       accumulatedTime: 0,
       status: 'active',

@@ -9,7 +9,7 @@ export const studyRoomController = {
     try {
       const userId = req.body.userId;
       const { roomType, studyMate, assistantTone, cameraAccess } = req.body;
-      const newRoom = await studyRoomService.createStudyRoom(userId, { roomType, studyMate, assistantTone, cameraAccess });
+      const newRoom = await studyRoomService.createStudyRoom(userId, roomType, studyMate, assistantTone, cameraAccess);
       res.status(201).json(newRoom);
     } catch (error) {
       res.status(500).json({ message: '공부방 생성에 실패했습니다.' });
@@ -115,12 +115,13 @@ export const studyRoomController = {
         return res.status(404).json({ message: "디폴트 공부방 설정이 없습니다." });
       }
 
-      const newStudyRoom = await studyRoomService.createStudyRoom(userId, {
-        roomType: defaultSettings.roomType,
-        studyMate: defaultSettings.studyMate,
-        assistantTone: defaultSettings.assistantTone,
-        cameraAccess: defaultSettings.cameraAccess,
-      });
+      const newStudyRoom = await studyRoomService.createStudyRoom(
+        userId,
+        defaultSettings.roomType,
+        defaultSettings.studyMate,
+        defaultSettings.assistantTone,
+        defaultSettings.cameraAccess
+      );
 
       const studyRoomId = (newStudyRoom._id as mongoose.Types.ObjectId).toString();
 
