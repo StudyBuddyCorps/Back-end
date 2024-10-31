@@ -30,7 +30,7 @@ const authJWT = async (req: Request, res: Response, next: NextFunction) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    console.error("JWT 인증 오류:", error);
     res.status(500).json({ status: 500, message: "Internal Server error" });
   }
 };

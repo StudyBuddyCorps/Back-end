@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../model/User";
 import { SignupLocalRequest } from "../interface/DTO/user/SignupDTO";
 import bcrypt from "bcrypt";
@@ -35,7 +36,8 @@ const createUser = async (signupUser: SignupLocalRequest) => {
 
 const getUserByID = async (userID: string) => {
   try {
-    const user = await User.findById({ userID });
+    const objectId = new mongoose.Types.ObjectId(userID);
+    const user = await User.findById(objectId);
     if (!user) {
       throw new Error("User not Found");
     }
@@ -72,8 +74,23 @@ const deleteUser = async (email: string) => {
   }
 };
 
+const addGroupToUser = async (userId: string, groupId: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const groupObjectId = new mongoose.Types.ObjectId(groupId)
+
+  if (!user.myGroups.includes(groupObjectId)) {
+    user.myGroups.push(groupObjectId);
+    await user.save();
+  }
+};
+
 export default {
   createUser,
+  addGroupToUser,
   getUserByID,
   getUserByRefresh,
   deleteUser,
