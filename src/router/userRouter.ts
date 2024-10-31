@@ -45,5 +45,6 @@ router.post(
 );
 
 //router.get('/profile', authJWT, authController.editProfile);
+router.get("/:userId", userController.getUserById);
 
 export default router;

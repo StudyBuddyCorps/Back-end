@@ -63,9 +63,41 @@ const addMemberToGroup = async (req: Request, res: Response) => {
   }
 };
 
+const getGroupById = async (req: Request, res: Response) => {
+  try {
+    const { groupId } = req.params;
+    const group = await groupService.getGroupById(groupId);
+
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    return res.status(200).json(group);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving group data" });
+  }
+};
+
+const getGroupIdByName = async (req: Request, res: Response) => {
+  try {
+    const { groupName } = req.params;
+    const group = await groupService.findGroupByName(groupName);
+
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    return res.status(200).json({ groupId: group._id });
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving group ID" });
+  }
+};
+
 export default {
   createGroup,
   getMyGroups,
   searchGroups,
-  addMemberToGroup
+  addMemberToGroup,
+  getGroupById,
+  getGroupIdByName,
 };

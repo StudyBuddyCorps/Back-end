@@ -79,13 +79,40 @@ const getMyGroups = async (userId: string) => {
   return groupsDetails;
 }
 
+const getGroupById = async (groupId: string) => {
+  const group = await Group.findById(groupId).populate("members.userId", "name");
+
+  if (!group) {
+    throw new Error("Group not found");
+  }
+
+  return {
+    groupId: group._id,
+    name: group.name,
+    description: group.description,
+    goalStudyTime: group.goalStudyTime,
+    createdAt: group.createdAt,
+    members: group.members.map((member: any) => ({
+      userId: member.userId._id,
+      name: member.userId.name,
+      role: member.role,
+    })),
+  };
+};
+
+const findGroupByName = async (name: string) => {
+  return await Group.findOne({ name });
+};
+
 
 const groupService = {
   createGroup,
   getGroupsByUserId,
   searchGroupsByName,
   addMemberToGroup,
-  getMyGroups
+  getMyGroups,
+  getGroupById,
+  findGroupByName,
 };
 
 export default groupService;

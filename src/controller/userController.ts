@@ -34,6 +34,28 @@ const signUp = async (req: Request, res: Response) => {
   }
 };
 
+const getUserById = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const user = await userService.getUserByID(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      name: user.nickname,
+      imgUrl: user.profileUrl,
+      goal: user.goal,
+      defaultSettings: user.defaultSettings,
+    });
+  } catch (error) {
+    console.error("Error retrieving user:", error);
+    return res.status(500).json({ message: "Error retrieving user" });
+  }
+};
+
 export default {
   signUp,
+  getUserById,
 };
