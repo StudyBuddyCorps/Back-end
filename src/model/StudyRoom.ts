@@ -7,7 +7,7 @@ interface IStudyRoomDocument extends Document {
     image: 'Noti';
     voice: 'voice1' | 'voice2' | 'voice3' | 'mute';
   };
-  assistantTone: 'default' | 'genius-nerd' | 'scholar' | 'fairy';
+  assistantTone: 'default' | 'nerd' | 'scholar' | 'fairy';
   cameraAccess: boolean;
   startTime: Date;
   accumulatedTime: number;
@@ -23,7 +23,7 @@ const studyRoomSchema: Schema<IStudyRoomDocument> = new Schema({
     image: {type: String, enum: ['Noti'], default: 'Noti', required: true },
     voice: { type: String, enum: ['voice1', 'voice2', 'voice3', 'mute'], default: 'mute' }
   },
-  assistantTone: { type: String, enum: ['default', 'genius-nerd', 'scholar', 'fairy'], default: 'default' },
+  assistantTone: { type: String, enum: ['default', 'nerd', 'scholar', 'fairy'], default: 'default' },
   cameraAccess: { type: Boolean, default: true },
   startTime: { type: Date, required: true },
   accumulatedTime: { type: Number, default: 0 },

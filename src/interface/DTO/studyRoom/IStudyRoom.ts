@@ -6,7 +6,7 @@ export interface IStudyRoom {
     image: 'Noti';
     voice: 'voice1' | 'voice2' | 'voice3' | 'mute';
   };
-  assistantTone: 'default' | 'genius-nerd' | 'scholar' | 'fairy';
+  assistantTone: 'default' | 'nerd' | 'scholar' | 'fairy';
   cameraAccess: boolean;
   startTime: Date;
   accumulatedTime: number;
