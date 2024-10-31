@@ -88,10 +88,15 @@ const addGroupToUser = async (userId: string, groupId: string) => {
   }
 };
 
+const getAllUsers = async () => {
+  return await User.find({}, "nickname profileUrl"); 
+};
+
 export default {
   createUser,
   addGroupToUser,
   getUserByID,
   getUserByRefresh,
   deleteUser,
+  getAllUsers,
 };

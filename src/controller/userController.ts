@@ -56,7 +56,18 @@ const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await userService.getAllUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
 export default {
   signUp,
   getUserById,
+  getAllUsers,
 };
