@@ -4,11 +4,16 @@ import { userService } from "../service";
 
 const createGroup = async (req: Request, res: Response) => {
   try {
-    const { name, creatorId } = req.body;
+    const { name, description, goalStudyTime, creatorId } = req.body;
     if (!creatorId) {
       return res.status(400).json({ error: 'Creator ID is required' });
     }
-    const group = await groupService.createGroup({ name, members: [{ userId: creatorId, role: 'admin' }] });
+    const group = await groupService.createGroup({
+      name,
+      description,
+      goalStudyTime,
+      members: [{ userId: creatorId, role: 'admin' }]
+    });
     
     await userService.addGroupToUser(creatorId, group._id.toString());
 
