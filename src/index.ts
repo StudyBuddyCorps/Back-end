@@ -4,6 +4,7 @@ import config from "./config";
 import router from "./router";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import redisClient from "./redis";
 
 const app = express();
 const port = config.port || 8080;

@@ -11,6 +11,7 @@
     "@types/axios": "^0.14.0",
     "@types/cookie-parser": "^1.4.7",
     "@types/qs": "^6.9.16",
+    "@types/redis": "^4.0.11",
     "@types/validator": "^13.12.2",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
@@ -22,7 +23,8 @@
     "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1",
-    "qs": "^6.13.0"
+    "qs": "^6.13.0",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
