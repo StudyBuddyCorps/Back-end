@@ -48,7 +48,7 @@ router.post(
 router.get("/:userId", userController.getUserById);
 router.get("/", userController.getAllUsers);
 router.post("/nickname/check", userController.checkNicknameDuplicate);
-router.put("/nickname", userController.updateNickname);
+router.put("/nickname/change", userController.updateNickname);
 router.put("/phrase", userController.updatePhrase);
 router.put("/goal", userController.updateGoal);
 

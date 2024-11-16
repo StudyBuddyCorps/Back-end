@@ -35,6 +35,7 @@ const signUp = async (req: Request, res: Response) => {
   }
 };
 
+// 유저 정보 조회
 const getUserById = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -57,6 +58,7 @@ const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+// 모든 유저 조회
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userService.getAllUsers();
@@ -67,6 +69,7 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+// 닉네임 중복 확인
 const checkNicknameDuplicate = async (req: Request, res: Response) => {
   const { nickname, userId } = req.body;
   try {
@@ -81,22 +84,29 @@ const checkNicknameDuplicate = async (req: Request, res: Response) => {
   }
 };
 
+// 닉네임 변경
 const updateNickname = async (req: Request, res: Response) => {
-  const { id, name } = req.body;
+  const { nickname } = req.body;
+  const userId = req.body.userId;
 
-  if (!id || !name) {
-    return res.status(400).json({ success: false, message: "Missing id or name" });
+  if (!userId || !nickname) {
+    return res.status(400).json({ success: false, message: "Missing userId or name" });
   }
 
   try {
-    await userService.updateNickname(id, name);
+    const isDuplicate = await userService.checkNicknameDuplicate(nickname, userId);
+    if (isDuplicate) {
+      return res.status(409).json({ success: false, message: "Nickname is already in use" });
+    }
+
+    await userService.updateNickname(userId, nickname);
     return res.status(200).json({ success: true, message: "Nickname updated successfully" });
   } catch (error) {
-    console.error("Error updating nickname:", error);
     return res.status(500).json({ success: false, message: "Failed to update nickname" });
   }
 };
 
+// 명언 변경
 const updatePhrase = async (req: Request, res: Response) => {
   const { userId, phrase } = req.body;
   try {
@@ -107,6 +117,7 @@ const updatePhrase = async (req: Request, res: Response) => {
   }
 };
 
+// 목표 변경
 const updateGoal = async (req: Request, res: Response) => {
   const { userId, goal } = req.body;
   try {

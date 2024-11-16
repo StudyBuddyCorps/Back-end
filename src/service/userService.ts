@@ -60,6 +60,7 @@ const getUserByRefresh = async (refreshToken: string) => {
   }
 };
 
+// 유저 삭제
 const deleteUser = async (email: string) => {
   try {
     const deleteResult = await User.deleteOne({ email });
@@ -74,6 +75,7 @@ const deleteUser = async (email: string) => {
   }
 };
 
+// 유저에게 그룹 추가
 const addGroupToUser = async (userId: string, groupId: string) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -88,16 +90,21 @@ const addGroupToUser = async (userId: string, groupId: string) => {
   }
 };
 
+// 모든 유저
 const getAllUsers = async () => {
   return await User.find({}, "nickname profileUrl"); 
 };
 
+// 닉네임 중복 확인
 const checkNicknameDuplicate = async (nickname: string, userId?: string) => {
-  const users = await User.find({});
-  const isDuplicate = users.some(user => user.nickname === nickname && user._id.toString() !== userId);
-  return isDuplicate;
+  const user = await User.findOne({
+    nickname: { $regex: `^${nickname}$`},
+    ...(userId ? { _id: { $ne: userId } } : {}),
+  });
+  return !!user;
 };
 
+// 닉네임 변경
 const updateNickname = async (userId: string, nickname: string) => {
   const isDuplicate = await checkNicknameDuplicate(nickname, userId);
   if (isDuplicate) {
@@ -113,6 +120,7 @@ const updateNickname = async (userId: string, nickname: string) => {
   await user.save();
 };
 
+// 명언 변경
 const updatePhrase = async (userId: string, phrase: string) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
@@ -126,6 +134,7 @@ const updatePhrase = async (userId: string, phrase: string) => {
   await user.save();
 };
 
+// 목표 변경
 const updateGoal = async (userId: string, goal: number) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
