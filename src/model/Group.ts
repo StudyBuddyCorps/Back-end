@@ -1,7 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 interface GroupMember {
-  userId: mongoose.Schema.Types.ObjectId;
+  userId: Types.ObjectId;
   role: string;
 }
 

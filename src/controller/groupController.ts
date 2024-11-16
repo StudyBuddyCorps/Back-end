@@ -4,7 +4,8 @@ import { userService } from "../service";
 
 const createGroup = async (req: Request, res: Response) => {
   try {
-    const { name, description, goalStudyTime, creatorId } = req.body;
+    const { name, description, goalStudyTime} = req.body;
+    const creatorId = req.body.userId;
     if (!creatorId) {
       return res.status(400).json({ error: 'Creator ID is required' });
     }
@@ -26,10 +27,6 @@ const createGroup = async (req: Request, res: Response) => {
 const getMyGroups = async (req: Request, res: Response) => {
   try {
     const userId = req.body.userId;
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
-    }
-
     const groups = await groupService.getMyGroups(userId);
     return res.status(200).json(groups);
   } catch (error) {
@@ -52,10 +49,11 @@ const searchGroups = async (req: Request, res: Response) => {
 
 const addMemberToGroup = async (req: Request, res: Response) => {
   try {
-    const { groupId, userId, role } = req.body;
-    const updatedGroup = await groupService.addMemberToGroup(groupId, userId, role);
+    const { groupId, role, memberId } = req.body;
+
+    const updatedGroup = await groupService.addMemberToGroup(groupId, memberId, role);
     
-    await userService.addGroupToUser(userId, groupId.toString());
+    await userService.addGroupToUser(memberId, groupId.toString());
     
     return res.status(200).json(updatedGroup);
   } catch (error) {
@@ -67,29 +65,9 @@ const getGroupById = async (req: Request, res: Response) => {
   try {
     const { groupId } = req.params;
     const group = await groupService.getGroupById(groupId);
-
-    if (!group) {
-      return res.status(404).json({ message: "Group not found" });
-    }
-
     return res.status(200).json(group);
   } catch (error) {
     return res.status(500).json({ message: "Error retrieving group data" });
-  }
-};
-
-const getGroupIdByName = async (req: Request, res: Response) => {
-  try {
-    const { groupName } = req.params;
-    const group = await groupService.findGroupByName(groupName);
-
-    if (!group) {
-      return res.status(404).json({ message: "Group not found" });
-    }
-
-    return res.status(200).json({ groupId: group._id });
-  } catch (error) {
-    return res.status(500).json({ message: "Error retrieving group ID" });
   }
 };
 
@@ -102,35 +80,40 @@ const searchMemberInGroup = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Search term is required" });
     }
 
+    const members = await groupService.searchMembersInGroup(groupId, searchTerm as string);
+    return res.status(200).json(members);
+  } catch (error) {
+    console.error("Error searching member in group:", error);
+    return res.status(500).json({ message: "Error searching member in group" });
+  }
+};
+
+const getGroupMembers = async (req: Request, res: Response) => {
+  try {
+    const { groupId } = req.params;
+
     const group = await groupService.getGroupById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
 
-    const members = await Promise.all(
-      group.members.map(async (member) => {
+    // Fetch member details
+    const memberDetails = await Promise.all(
+      group.members.map(async (member: any) => {
         const user = await userService.getUserByID(member.userId);
-        return user;
+        return {
+          userId: user._id.toString(),
+          nickname: user.nickname,
+          email: user.email,
+          role: member.role,
+        };
       })
     );
 
-    const filteredMembers = members
-      .filter(
-        (member) =>
-          member &&
-          member.nickname.toLowerCase().includes((searchTerm as string).toLowerCase())
-      )
-      .map((member) => ({
-        userId: member._id,
-        name: member.nickname,
-        imgUrl: member.profileUrl,
-        role: group.members.find((m) => m.userId.toString() === member._id.toString())?.role,
-      }));
-
-    return res.status(200).json(filteredMembers);
+    return res.status(200).json(memberDetails);
   } catch (error) {
-    console.error("Error searching member in group:", error);
-    return res.status(500).json({ message: "Error searching member in group" });
+    console.error("Error fetching group members:", error);
+    return res.status(500).json({ message: "Error fetching group members" });
   }
 };
 
@@ -140,6 +123,6 @@ export default {
   searchGroups,
   addMemberToGroup,
   getGroupById,
-  getGroupIdByName,
   searchMemberInGroup,
+  getGroupMembers,
 };
