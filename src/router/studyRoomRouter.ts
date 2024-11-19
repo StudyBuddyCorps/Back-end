@@ -13,5 +13,6 @@ router.post('/:roomId/stop', authJWT, studyRoomController.stopStudyRoom);
 router.get('/:roomId', authJWT, studyRoomController.getStudyRoomInfo);
 router.post('/default', authJWT, studyRoomController.setDefaultStudyRoom);
 router.post('/defaultstart', authJWT, studyRoomController.startDefaultStudyRoom);
+router.patch('/:roomId/feedback', authJWT, studyRoomController.updateFeedback);
 
 export default router;

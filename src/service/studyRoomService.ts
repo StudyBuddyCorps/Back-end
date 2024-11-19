@@ -1,6 +1,4 @@
 import User from "../model/User";
-import { StudyRecordModel } from '../model/Record';
-import mongoose from 'mongoose';
 import redisClient from '../redis';
 import { wss } from "../index";
 import { v4 as uuidv4 } from 'uuid';
@@ -15,102 +13,89 @@ const createStudyRoom = async (userId: string, roomType: string, studyMate: any,
     studyMate: JSON.stringify(studyMate),
     assistantTone,
     cameraAccess: cameraAccess.toString(),
-    startTime: new Date().toISOString(),
     accumulatedTime: "0",
-    status: "active",
-    createdAt: new Date().toISOString(),
+    status: "pending",
+    createdAt: "0",
+    feedbackList: JSON.stringify([]),
   };
 
-  // Redis에 방 정보 저장
   await redisClient.hSet(_id, roomData);
 
   return { ...roomData };
 };
 
 // 공부방 시작
-const startStudyRoom = async (userId: string, roomId: string) => {
-  const roomKey = roomId;
-
-  // Redis에서 방 정보 확인
-  const room = await redisClient.hGetAll(roomKey);
+const startStudyRoom = async (userId: string, _id: string) => {
+  const room = await redisClient.hGetAll(_id);
   if (!room || room.userId !== userId) {
     throw new Error("공부방을 찾을 수 없습니다.");
   }
 
-  // 방 상태를 활성화로 설정
-  await redisClient.hSet(roomKey, { status: "active", startTime: new Date().toISOString() });
+  await redisClient.hSet(_id, { status: "active", createdAt: new Date().toISOString() });
 
-  // WebSocket으로 클라이언트에 알림 전송
   wss.clients.forEach((client) => {
     client.send(
       JSON.stringify({
         type: "roomStarted",
-        roomId,
+        _id,
         message: "Study room has started.",
       })
     );
   });
 
-  return { message: "공부방 시작됨", roomId };
+  return { message: "공부방 시작됨", _id };
 };
 
 // 공부방 일시정지 및 재개
-const pauseStudyRoom = async (userId: string, roomId: string) => {
-  const roomKey = roomId;
-
-  const room = await redisClient.hGetAll(roomKey);
+const pauseStudyRoom = async (userId: string, _id: string, accumulatedTime: number) => {
+  const room = await redisClient.hGetAll(_id);
   if (!room || room.userId !== userId) {
     throw new Error("공부방을 찾을 수 없습니다.");
   }
 
-  const now = new Date();
-  let accumulatedTime = parseInt(room.accumulatedTime || "0", 10);
-
   if (room.status === "active") {
-    accumulatedTime += Math.floor((now.getTime() - new Date(room.startTime).getTime()) / 1000);
-    await redisClient.hSet(roomKey, { status: "paused", accumulatedTime: accumulatedTime.toString() });
-  } else {
-    await redisClient.hSet(roomKey, { status: "active", startTime: now.toISOString() });
+    await redisClient.hSet(_id, { status: "paused", accumulatedTime: accumulatedTime.toString() });
+  } else if (room.status === "paused") {
+    await redisClient.hSet(_id, { status: "active" });
   }
 
   wss.clients.forEach((client) => {
-    client.send(JSON.stringify({ type: "roomPaused", roomId, status: room.status }));
+    client.send(
+      JSON.stringify({
+        type: "roomPaused",
+        _id,
+        status: room.status === "active" ? "paused" : "active",
+      })
+    );
   });
 
-  return { roomId, status: room.status, accumulatedTime };
+  return { _id, status: room.status === "active" ? "paused" : "active", accumulatedTime };
 };
 
 // 공부방 종료
-const stopStudyRoom = async (userId: string, roomId: string) => {
-  const roomKey = roomId;
-  const room = await redisClient.hGetAll(roomKey);
+const stopStudyRoom = async (userId: string, _id: string, accumulatedTime: number) => {
+  const room = await redisClient.hGetAll(_id);
 
   if (!room || room.userId !== userId) {
     throw new Error("공부방을 찾을 수 없습니다.");
   }
 
-  const now = new Date();
-  let totalStudyTime = parseInt(room.accumulatedTime || "0", 10);
-
-  if (room.status === "active") {
-    totalStudyTime += Math.floor((now.getTime() - new Date(room.startTime).getTime()) / 1000);
-  }
-
-  // 공부 기록 저장
-  const newRecord = new StudyRecordModel({
-    userId,
-    date: now,
-    startTime: room.startTime,
-    endTime: now.toTimeString().split(' ')[0],
-    studyDuration: totalStudyTime,
-    createdAt: now,
+  await redisClient.hSet(_id, { accumulatedTime: accumulatedTime.toString(), status: "stopped" });
+  wss.clients.forEach((client) => {
+    client.send(
+      JSON.stringify({
+        type: "roomStopped",
+        roomId: _id,
+        message: "Study room has been stopped.",
+        accumulatedTime,
+      })
+    );
   });
-  await newRecord.save();
 
   // Redis에서 방 정보 삭제
-  await redisClient.del(roomKey);
+  // await redisClient.del(roomId);
 
-  return { totalStudyTime, stoppedAt: now };
+  return { accumulatedTime };
 };
 
 // 디폴트 공부방 설정 저장
@@ -127,30 +112,6 @@ const setDefaultStudyRoom = async (userId: string, roomSettings: any) => {
   await user.save();
 
   return user.defaultSettings;
-};
-
-// 공부방 정보 조회
-const getStudyRoomInfo = async (userId: string, roomId: string) => {
-  const roomKey = roomId;
-
-    // Redis에서 방 정보 조회
-  const room = await redisClient.hGetAll(roomKey);
-  if (!room || room.userId !== userId) {
-    throw new Error("공부방을 찾을 수 없습니다.");
-  }
-
-  // Redis에서 저장된 데이터 반환
-  return {
-    _id: roomKey,
-    userId: room.userId,
-    roomType: room.roomType,
-    studyMate: JSON.parse(room.studyMate),
-    assistantTone: room.assistantTone,
-    cameraAccess: room.cameraAccess === "true",
-    startTime: room.startTime,
-    accumulatedTime: parseInt(room.accumulatedTime || "0", 10),
-    status: room.status,
-  };
 };
 
 // 디폴트 공부방 시작
@@ -176,6 +137,40 @@ const startDefaultStudyRoom = async (userId: string) => {
     message: "디폴트 공부방이 성공적으로 시작되었습니다.",
     room: startedRoom,
   };
+};
+
+// 공부방 정보 조회
+const getStudyRoomInfo = async (userId: string, _id: string) => {
+  // Redis에서 방 정보 조회
+  const room = await redisClient.hGetAll(_id);
+  if (!room || room.userId !== userId) {
+    throw new Error("공부방을 찾을 수 없습니다.");
+  }
+
+  return {
+    _id,
+    userId: room.userId,
+    roomType: room.roomType,
+    studyMate: JSON.parse(room.studyMate),
+    assistantTone: room.assistantTone,
+    cameraAccess: room.cameraAccess === "true",
+    accumulatedTime: parseInt(room.accumulatedTime || "0", 10),
+    status: room.status,
+    feedbackList: JSON.parse(room.feedbackList || "[]"),
+  };
+};
+
+const updateFeedback = async (_id: string, feedbackType: string[], time: string | number ) => {
+  const room = await redisClient.hGetAll(_id);
+  if (!_id) throw new Error("공부방이 없음~");
+
+  const feedbackList = room.feedbackList ? JSON.parse(room.feedbackList) : [];
+  if (!Array.isArray(feedbackList)) throw new Error("피드백 리스트 데이터가 손상되었습니다.");
+  feedbackList.push({ feedType: feedbackType, time });
+
+  await redisClient.hSet(_id, { feedbackList: JSON.stringify(feedbackList) });
+
+  return { message: "피드백이 성공적으로 업데이트되었습니다.", feedbackList };
 };
 
 // // 뽀모도로 세션 관리
@@ -239,6 +234,7 @@ export default {
   setDefaultStudyRoom,
   startDefaultStudyRoom,
   getStudyRoomInfo,
+  updateFeedback,
   // managePomodoro,
   // getPomodoroStatus,
 }
