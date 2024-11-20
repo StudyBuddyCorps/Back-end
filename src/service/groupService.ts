@@ -1,82 +1,54 @@
 import { GroupData } from "../interface/DTO/group/IGroup";
 import Group from '../model/Group';
 import User from '../model/User';
+import mongoose, { Types } from "mongoose";
+
 
 const createGroup = async (groupData: GroupData) => {
   const group = new Group(groupData);
-  await group.save();
-  return group;;
-};
-
-const getGroupsByUserId = async (userId: string) => {
-  const user = await User.findById(userId).populate('myGroups').exec();
-  if (!user) {
-    throw new Error('User not found');
-  }
-  return user.myGroups;
+  return await group.save();
 };
 
 const searchGroupsByName = async (name: string) => {
-  const groups = await Group.find({ name: { $regex: name, $options: 'i' } });
-    return groups.map((group: any) => ({
-      groupId: group._id,
-      name: group.name,
-      createdAt: group.createdAt,
-      memberCount: group.members.length,
-    }));
+  const groups = await Group.find({ name: { $regex: name, $options: 'i' } }).select(
+    "_id name createdAt members"
+  );
 };
 
 const addMemberToGroup = async (groupId: string, userId: string, role: 'member') => {
   const group = await Group.findById(groupId);
   if (!group) {
-    throw new Error('Group not found');
+    throw new Error("Group not found");
   }
 
-  // 이미 존재하는 userId인지 확인
-  const memberExists = group.members.some(member => member.userId.toString() === userId);
+  const objectIdUserId = new Types.ObjectId(userId);
+
+  const memberExists = group.members.some((member: any) => member.userId.toString() === userId);
   if (memberExists) {
-    throw new Error('User is already a member of this group');
-  }
-  
-  const updatedGroup = await Group.findByIdAndUpdate(
-    groupId,
-    { $push: { members: { userId, role } } },
-    { new: true }
-  );
-
-  if (updatedGroup) {
-    await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { myGroups: groupId } }
-    );
+    throw new Error("User is already a member of this group");
   }
 
-  return updatedGroup;
+  group.members.push({ userId: objectIdUserId, role });
+  await group.save();
+
+  await User.findByIdAndUpdate(userId, { $addToSet: { myGroups: groupId } });
+
+  return group;
 };
 
 const getMyGroups = async (userId: string) => {
-  const user = await User.findById(userId);
-    
-  if (!user || !user.myGroups || user.myGroups.length === 0) {
-    throw new Error('User not found');
+  const user = await User.findById(userId).populate("myGroups").exec();
+  if (!user || !user.myGroups) {
+    throw new Error("User not found or has no groups");
   }
 
-  const groups = await Group.find({ _id: { $in: user.myGroups } });
-
-  const groupsDetails = groups.map((group: any) => {
-      const member = group.members.find((member: any) => member.userId.toString() === userId);
-      const role = member ? member.role : 'Member';
-
-      return {
-        groupId: group._id,
-        name: group.name,
-        createdAt: group.createdAt,
-        role: role,
-        memberCount: group.members.length,
-      };
-  });
-
-  return groupsDetails;
+  return user.myGroups.map((group: any) => ({
+    groupId: group._id,
+    name: group.name,
+    createdAt: group.createdAt,
+    role: group.members.find((member: any) => member.userId.toString() === userId)?.role || "member",
+    memberCount: group.members.length,
+  }));
 }
 
 const getGroupById = async (groupId: string) => {
@@ -100,19 +72,32 @@ const getGroupById = async (groupId: string) => {
   };
 };
 
-const findGroupByName = async (name: string) => {
-  return await Group.findOne({ name });
+const searchMembersInGroup = async (groupId: string, searchTerm: string) => {
+  const group = await Group.findById(groupId).populate("members.userId", "nickname profileUrl");
+  if (!group) {
+    throw new Error("Group not found");
+  }
+
+  return group.members
+    .filter((member: any) =>
+      member.userId.nickname.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .map((member: any) => ({
+      userId: member.userId._id,
+      name: member.userId.nickname,
+      imgUrl: member.userId.profileUrl,
+      role: member.role,
+    }));
 };
 
 
 const groupService = {
   createGroup,
-  getGroupsByUserId,
   searchGroupsByName,
   addMemberToGroup,
   getMyGroups,
   getGroupById,
-  findGroupByName,
+  searchMembersInGroup,
 };
 
 export default groupService;

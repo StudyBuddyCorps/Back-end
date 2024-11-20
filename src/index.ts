@@ -5,6 +5,8 @@ import router from "./router";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import redisClient from "./redis";
+import { WebSocketServer } from "ws";
+import { createServer } from "http";
 
 const app = express();
 const port = config.port || 8080;
@@ -25,6 +27,24 @@ app.use(
 );
 app.use(router);
 
-app.listen(port, () => {
+const server = createServer(app);
+
+server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
+
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  console.log("WebSocket connection established");
+
+  ws.on("message", (message) => {
+    console.log("Received message:", message.toString());
+  });
+
+  ws.on("close", () => {
+    console.log("WebSocket connection closed");
+  });
+});
+
+export { wss };
