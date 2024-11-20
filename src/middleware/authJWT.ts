@@ -1,6 +1,7 @@
 import jwtHandler from "../util/jwt";
 import { Request, Response, NextFunction } from "express";
 import { userService } from "../service";
+import mongoose from "mongoose";
 
 const authJWT = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -13,14 +14,14 @@ const authJWT = async (req: Request, res: Response, next: NextFunction) => {
 
       const decodedToken = jwtHandler.verify(accessToken);
       if (decodedToken?.ok) {
-        const userId: string = decodedToken.decoded.id;
+        const userId = new mongoose.Types.ObjectId(decodedToken.decoded.id);
         const existingUser = await userService.getUserByID(userId);
         if (!existingUser)
           return res
             .status(401)
-            .json({ status: 401, message: "User not found" });
+            .json({ status: 401, message: "User not found in authJWT" });
 
-        req.body.userId = existingUser.id;
+        req.body.userId = existingUser._id;
         next();
       } else {
         res.status(401).json({

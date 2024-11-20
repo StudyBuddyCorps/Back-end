@@ -37,7 +37,7 @@ const signUp = async (req: Request, res: Response) => {
 
 const getUserById = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const { userId } = req.body;
     const user = await userService.getUserByID(userId);
 
     if (!user) {
@@ -70,30 +70,43 @@ const getAllUsers = async (req: Request, res: Response) => {
 const checkNicknameDuplicate = async (req: Request, res: Response) => {
   const { nickname, userId } = req.body;
   try {
-    const isDuplicate = await userService.checkNicknameDuplicate(nickname, userId);
+    const isDuplicate = await userService.checkNicknameDuplicate(
+      nickname,
+      userId
+    );
     if (isDuplicate) {
-      return res.status(409).json({ success: false, message: "Nickname is already in use" });
+      return res
+        .status(409)
+        .json({ success: false, message: "Nickname is already in use" });
     }
 
     return res.status(200).json({ isDuplicate });
   } catch (error) {
-    return res.status(500).json({ success: false, error: "Failed to check nickname duplicate" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to check nickname duplicate" });
   }
 };
 
 const updateNickname = async (req: Request, res: Response) => {
-  const { id, name } = req.body;
+  const { userId, nickname } = req.body;
 
-  if (!id || !name) {
-    return res.status(400).json({ success: false, message: "Missing id or name" });
+  if (!userId || !nickname) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing id or name" });
   }
 
   try {
-    await userService.updateNickname(id, name);
-    return res.status(200).json({ success: true, message: "Nickname updated successfully" });
+    await userService.updateNickname(userId, nickname);
+    return res
+      .status(200)
+      .json({ success: true, message: "Nickname updated successfully" });
   } catch (error) {
     console.error("Error updating nickname:", error);
-    return res.status(500).json({ success: false, message: "Failed to update nickname" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to update nickname" });
   }
 };
 
@@ -101,9 +114,13 @@ const updatePhrase = async (req: Request, res: Response) => {
   const { userId, phrase } = req.body;
   try {
     await userService.updatePhrase(userId, phrase);
-    return res.status(200).json({ success: true, message: "Phrase updated successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Phrase updated successfully" });
   } catch (error) {
-    return res.status(500).json({ success: false, error: "Failed to update phrase" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to update phrase" });
   }
 };
 
@@ -111,9 +128,13 @@ const updateGoal = async (req: Request, res: Response) => {
   const { userId, goal } = req.body;
   try {
     await userService.updateGoal(userId, goal);
-    return res.status(200).json({ success: true, message: "Goal updated successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Goal updated successfully" });
   } catch (error) {
-    return res.status(500).json({ success: false, error: "Failed to update goal" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to update goal" });
   }
 };
 

@@ -34,7 +34,7 @@ const createUser = async (signupUser: SignupLocalRequest) => {
   }
 };
 
-const getUserByID = async (userID: string) => {
+const getUserByID = async (userID: mongoose.Types.ObjectId) => {
   try {
     const objectId = new mongoose.Types.ObjectId(userID);
     const user = await User.findById(objectId);
@@ -77,10 +77,10 @@ const deleteUser = async (email: string) => {
 const addGroupToUser = async (userId: string, groupId: string) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
-  const groupObjectId = new mongoose.Types.ObjectId(groupId)
+  const groupObjectId = new mongoose.Types.ObjectId(groupId);
 
   if (!user.myGroups.includes(groupObjectId)) {
     user.myGroups.push(groupObjectId);
@@ -89,12 +89,14 @@ const addGroupToUser = async (userId: string, groupId: string) => {
 };
 
 const getAllUsers = async () => {
-  return await User.find({}, "nickname profileUrl"); 
+  return await User.find({}, "nickname profileUrl");
 };
 
 const checkNicknameDuplicate = async (nickname: string, userId?: string) => {
   const users = await User.find({});
-  const isDuplicate = users.some(user => user.nickname === nickname && user._id.toString() !== userId);
+  const isDuplicate = users.some(
+    (user) => user.nickname === nickname && user._id.toString() !== userId
+  );
   return isDuplicate;
 };
 
@@ -116,13 +118,13 @@ const updateNickname = async (userId: string, nickname: string) => {
 const updatePhrase = async (userId: string, phrase: string) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
-  
+
   if (user.phrase) {
     user.phrase.content = phrase;
   } else {
     user.phrase = { isRandom: true, content: phrase };
   }
-  
+
   await user.save();
 };
 

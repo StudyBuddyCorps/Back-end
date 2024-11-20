@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { userController } from "../controller";
 import { body } from "express-validator";
+import authJWT from "../middleware/authJWT";
 
 const router = Router();
 
@@ -45,11 +46,11 @@ router.post(
 );
 
 //router.get('/profile', authJWT, authController.editProfile);
-router.get("/:userId", userController.getUserById);
+router.get("/user", authJWT, userController.getUserById);
 router.get("/", userController.getAllUsers);
-router.post("/nickname/check", userController.checkNicknameDuplicate);
-router.put("/nickname", userController.updateNickname);
-router.put("/phrase", userController.updatePhrase);
-router.put("/goal", userController.updateGoal);
+router.post("/nickname/check", authJWT, userController.checkNicknameDuplicate);
+router.put("/nickname", authJWT, userController.updateNickname);
+router.put("/phrase", authJWT, userController.updatePhrase);
+router.put("/goal", authJWT, userController.updateGoal);
 
 export default router;
