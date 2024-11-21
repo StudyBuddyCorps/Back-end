@@ -131,7 +131,7 @@ const getNewToken = async (req: Request, res: Response) => {
         .status(401)
         .json({ status: 401, message: "유효하지 않은 토큰입니다." });
 
-    if (decodedAccessToken?.type == -1)
+    if (decodedRefreshToken?.type == -1)
       // 만료된 refresh 토큰 시 -> 재로그인 유도
       return res.status(401).json({ status: 401, message: "재로그인 하세요" });
 
