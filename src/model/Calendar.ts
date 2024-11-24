@@ -6,16 +6,21 @@ const CalendarSchema = new Schema({
     ref: "User",
     required: true,
   },
-  year: { type: Number, required: true },
-  month: { type: Number, required: true },
-  record: [
+  yearMonth: { type: String, required: true },
+  dateRecord: [
     {
-      day: { type: Number, required: true },
-      studyResult: [
-        { type: mongoose.Schema.Types.ObjectId, ref: "StudyResult" },
+      date: { type: Number, required: true },
+      studyRecords: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "StudyRecord" },
       ],
+      totalTime: { type: Number, required: true },
+      feedTime: { type: Number, required: true },
+      sleepCount: { type: Number, default: 0 },
+      phoneCount: { type: Number, default: 0 },
+      postureCount: { type: Number, default: 0 },
     },
   ],
+  goal: { type: Number, default: 3600 },
   monthlyTime: { type: Number, default: 0 }, // 이번 달 누적 공부 시간
   weeklyTime: { type: Number, default: 0 }, // 이번 주 누적 공부 시간
   dailyTime: { type: Number, default: 0 }, // 오늘 누적 공부 시간

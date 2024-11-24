@@ -1,10 +1,22 @@
-import { Router } from 'express';
-import { recordController } from '../controller/recordController';
-import authJWT from '../middleware/authJWT';
+import { Router } from "express";
+import authJWT from "../middleware/authJWT";
+import { recordController } from "../controller";
+import { body } from "express-validator";
 
 const router = Router();
 
-router.get('/', authJWT, recordController.getStudyRecords);
-router.get('/:recordId', authJWT, recordController.getStudyRecordById);
+router.post(
+  "/final",
+  authJWT,
+  [
+    body("userId").notEmpty().withMessage("유저 아이디가 없습니다."),
+    body("roomId")
+      .notEmpty()
+      .withMessage("roomId가 없습니다.")
+      .isString()
+      .withMessage("roomId는 문자열이어야 합니다."),
+  ],
+  recordController.createStudyRecord
+);
 
 export default router;
