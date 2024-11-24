@@ -1,28 +1,24 @@
-import { Request, Response } from 'express';
-import { recordService } from '../service/recordService';
+import { Request, Response } from "express";
+import { recordService } from "../service";
+import { CreateStudyRecordRequest } from "../interface/DTO/record/createStudyRecord";
+import { validationResult } from "express-validator";
 
-export const recordController = {
-  async getStudyRecords(req: Request, res: Response) {
-    try {
-      const userId = req.body.userId;
-      const records = await recordService.getStudyRecords(userId);
-      res.status(200).json(records);
-    } catch (error) {
-      res.status(500).json({ message: '공부 기록을 가져오는데 실패했습니다.' });
+// final 페이지에 필요한 결과
+const createStudyRecord = async (req: Request, res: Response) => {
+  try {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      const validationErrorMsg = error["errors"][0].msg;
+      return res.status(400).json({ error: validationErrorMsg });
     }
-  },
-
-  async getStudyRecordById(req: Request, res: Response) {
-    try {
-      const userId = req.body.userId;
-      const recordId = req.params.recordId;
-      const record = await recordService.getStudyRecordById(userId, recordId);
-      if (!record) {
-        return res.status(404).json({ message: '공부 기록을 찾을 수 없습니다.' });
-      }
-      res.status(200).json(record);
-    } catch (error) {
-      res.status(500).json({ message: '공부 기록을 가져오는데 실패했습니다.' });
-    }
+    const request: CreateStudyRecordRequest = req.body;
+    const result = await recordService.createStudyRecord(request.roomId);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "결과를 가져오는데 실패하였습니다." });
   }
+};
+
+export default {
+  createStudyRecord,
 };
