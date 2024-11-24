@@ -94,6 +94,12 @@ const getAllUsers = async () => {
   return await User.find({}, "nickname profileUrl");
 };
 
+const getGoal = async (userId: mongoose.Types.ObjectId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  return user.goal;
+};
+
 // 닉네임 중복 확인
 const checkNicknameDuplicate = async (nickname: string, userId?: string) => {
   const user = await User.findOne({
@@ -146,8 +152,9 @@ export default {
   addGroupToUser,
   getUserByID,
   getUserByRefresh,
-  deleteUser,
   getAllUsers,
+  getGoal,
+  deleteUser,
   checkNicknameDuplicate,
   updateNickname,
   updatePhrase,

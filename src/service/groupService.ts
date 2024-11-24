@@ -1,8 +1,7 @@
 import { GroupData } from "../interface/DTO/group/IGroup";
-import Group from '../model/Group';
-import User from '../model/User';
-import mongoose, { Types } from "mongoose";
-
+import Group from "../model/Group";
+import User from "../model/User";
+import mongoose from "mongoose";
 
 const createGroup = async (groupData: GroupData) => {
   const group = new Group(groupData);
@@ -10,25 +9,31 @@ const createGroup = async (groupData: GroupData) => {
 };
 
 const searchGroupsByName = async (name: string) => {
-  const groups = await Group.find({ name: { $regex: name, $options: 'i' } }).select(
-    "_id name createdAt members"
-  );
+  const groups = await Group.find({
+    name: { $regex: name, $options: "i" },
+  }).select("_id name createdAt members");
 };
 
-const addMemberToGroup = async (groupId: string, userId: string, role: 'member') => {
+const addMemberToGroup = async (
+  groupId: string,
+  userId: string,
+  role: "member"
+) => {
   const group = await Group.findById(groupId);
   if (!group) {
     throw new Error("Group not found");
   }
 
-  const objectIdUserId = new Types.ObjectId(userId);
+  const objectIdUserId = new mongoose.Types.ObjectId(userId);
 
-  const memberExists = group.members.some((member: any) => member.userId.toString() === userId);
+  const memberExists = group.members.some(
+    (member: any) => member.userId.toString() === userId
+  );
   if (memberExists) {
     throw new Error("User is already a member of this group");
   }
 
-  group.members.push({ userId: objectIdUserId, role });
+  group.members.push({ userId: objectIdUserId, role: role });
   await group.save();
 
   await User.findByIdAndUpdate(userId, { $addToSet: { myGroups: groupId } });
@@ -46,13 +51,18 @@ const getMyGroups = async (userId: string) => {
     groupId: group._id,
     name: group.name,
     createdAt: group.createdAt,
-    role: group.members.find((member: any) => member.userId.toString() === userId)?.role || "member",
+    role:
+      group.members.find((member: any) => member.userId.toString() === userId)
+        ?.role || "member",
     memberCount: group.members.length,
   }));
-}
+};
 
 const getGroupById = async (groupId: string) => {
-  const group = await Group.findById(groupId).populate("members.userId", "name");
+  const group = await Group.findById(groupId).populate(
+    "members.userId",
+    "name"
+  );
 
   if (!group) {
     throw new Error("Group not found");
@@ -73,7 +83,10 @@ const getGroupById = async (groupId: string) => {
 };
 
 const searchMembersInGroup = async (groupId: string, searchTerm: string) => {
-  const group = await Group.findById(groupId).populate("members.userId", "nickname profileUrl");
+  const group = await Group.findById(groupId).populate(
+    "members.userId",
+    "nickname profileUrl"
+  );
   if (!group) {
     throw new Error("Group not found");
   }
@@ -89,7 +102,6 @@ const searchMembersInGroup = async (groupId: string, searchTerm: string) => {
       role: member.role,
     }));
 };
-
 
 const groupService = {
   createGroup,

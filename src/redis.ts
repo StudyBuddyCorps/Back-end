@@ -5,6 +5,7 @@ const redisClient = createClient({
   socket: {
     host: process.env.REDIS_ENDPOINT,
     port: 16653,
+    connectTimeout: 20000,
   },
 });
 
