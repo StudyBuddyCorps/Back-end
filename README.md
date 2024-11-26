@@ -2,12 +2,16 @@
 # 🐣StudyBuddy Backend🐣
 노티와 함께 성장하는 공부 파트너, StudyBuddy의 백엔드입니다!
 
+<br><br>
+
 ## 🔎 Service Introduction
 StudyBuddy는 가상의 캐릭터 `노티`가 학습 자세를 관찰하고 피드백을 제공하며, 학습 결과를 시각화하여 목표 달성을 돕는 학습 플랫폼입니다.
 이제, 혼자 공부하지 말고, StudyBuddy와 함께하세요!
 ### 🎥 Demonstration video
 [![StudyBuddy 소개 영상](https://github.com/user-attachments/assets/8a6c9c70-004c-4e74-9f5e-1d58c37a0141)
 ](https://youtu.be/QcWG6GFLRQc)
+
+<br><br>
 
 ## 😁 Backend Developers
 <table>
@@ -26,11 +30,17 @@ StudyBuddy는 가상의 캐릭터 `노티`가 학습 자세를 관찰하고 피�
   </tbody>
 </table>
 
+<br><br>
+
 ## 🛠️ Technology Stack
 ![기술스택_백엔드](https://github.com/user-attachments/assets/84e95f5c-81d8-4041-bdba-bd9cd2c44a91)
 
+<br><br>
+
 ## 🔗 API Specification
 api 명세서 링크와 이미지~
+
+<br><br>
 
 ## 📂 Folder Archtecture
 <details>
