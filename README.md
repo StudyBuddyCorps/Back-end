@@ -38,7 +38,9 @@ StudyBuddy는 가상의 캐릭터 `노티`가 학습 자세를 관찰하고 피�
 <br><br>
 
 ## 🔗 API Specification
-api 명세서 링크와 이미지~
+![image](https://github.com/user-attachments/assets/22d1657a-ff02-42d5-9485-17330ee26e77)
+> **url:** https://app.swaggerhub.com/apis-docs/0528JISU_1/StudyBuddy/1.0.0
+
 
 <br><br>
 
