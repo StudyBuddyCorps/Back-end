@@ -1,6 +1,6 @@
 ![Stylized laptop side mockup](https://github.com/user-attachments/assets/b64e834b-dae0-43f0-9c2e-b42139c6b804)
 # 🐣StudyBuddy Backend🐣
-노티와 함께 성장하는 공부 파트너, StudyBuddy의 백엔드입니다!
+Vision을 활용한 실시간 학습 관리 웹어플리케이션, StudyBuddy의 백엔드입니다!
 
 <br><br>
 
@@ -36,12 +36,6 @@ StudyBuddy는 가상의 캐릭터 `노티`가 학습 자세를 관찰하고 피�
 ![기술스택_백엔드](https://github.com/user-attachments/assets/84e95f5c-81d8-4041-bdba-bd9cd2c44a91)
 
 <br><br>
-
-## 📌 System Archtecture
-![image](https://github.com/user-attachments/assets/af2ef79f-2f5f-4fbd-8dd8-347fe6fed1d6)
-
-<br><br>
-
 
 ## 🔗 API Specification
 ![image](https://github.com/user-attachments/assets/22d1657a-ff02-42d5-9485-17330ee26e77)
