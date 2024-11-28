@@ -29,7 +29,7 @@ const getResultFeedBack = (
     const endTime = Math.min(totalTime, currentTime + 5);
 
     if (currentFeedType) {
-      currentFeedType.forEach((feed: string) => {
+      currentFeedType.map((feed: string) => {
         if (feed === "bad_posture") posture_count++;
         else if (feed === "is_sleeping") sleep_count++;
         else if (feed === "is_holding_phone") phone_count++;
