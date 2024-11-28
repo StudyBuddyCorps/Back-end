@@ -29,12 +29,12 @@ const createStudyRecord = async (_id: string) => {
     //3. StudyRecord DB에 추가
     const newStudyRecord = new StudyRecord({
       feedList: feedList,
-      createdAt: new Date(roomData.createdAt),
+      createdAt: new Date(parseInt(roomData.createdAt)),
       totalTime: Number(roomData.accumulatedTime),
       feedTime: feedTime,
       advice: advice,
       sleepCount: sleepCount,
-      phoneCount: sleepCount,
+      phoneCount: phoneCount,
       postureCount: postureCount,
     });
 
@@ -47,7 +47,7 @@ const createStudyRecord = async (_id: string) => {
   }
 };
 
-const getStudyRecord = async (studyRecordId: mongoose.Types.ObjectId) => {
+const getStudyRecord = async (studyRecordId: string) => {
   try {
     const record = await StudyRecord.findById(studyRecordId);
 

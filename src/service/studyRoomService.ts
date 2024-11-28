@@ -40,7 +40,7 @@ const startStudyRoom = async (userId: string, _id: string) => {
 
   await redisClient.hSet(_id, {
     status: "active",
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().getTime(),
   });
 
   wss.clients.forEach((client) => {
