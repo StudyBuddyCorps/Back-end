@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { recordService } from "../service";
-import { CreateStudyRecordRequest } from "../interface/DTO/record/createStudyRecord";
+import { CreateStudyRecordRequest } from "../interface/DTO/record/CreateStudyRecord";
 import { validationResult } from "express-validator";
 
 // final 페이지에 필요한 결과
