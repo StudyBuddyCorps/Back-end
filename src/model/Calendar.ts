@@ -20,7 +20,6 @@ const CalendarSchema = new Schema({
       postureCount: { type: Number, default: 0 },
     },
   ],
-  goal: { type: Number, default: 3600 },
   monthlyTime: { type: Number, default: 0 }, // 이번 달 누적 공부 시간
   weeklyTime: { type: Number, default: 0 }, // 이번 주 누적 공부 시간
   dailyTime: { type: Number, default: 0 }, // 오늘 누적 공부 시간

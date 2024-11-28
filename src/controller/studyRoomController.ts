@@ -4,8 +4,8 @@ import { studyRoomService } from "../service";
 // 공부방 생성
 const createStudyRoom = async (req: Request, res: Response) => {
   try {
-    const { userId, roomType, studyMate, assistantTone, cameraAccess } =
-      req.body;
+    const userId = req.userId;
+    const { roomType, studyMate, assistantTone, cameraAccess } = req.body;
     const newRoom = await studyRoomService.createStudyRoom(
       userId.toString(),
       roomType,
@@ -22,7 +22,7 @@ const createStudyRoom = async (req: Request, res: Response) => {
 // 공부방 시작
 const startStudyRoom = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const roomId = req.params.roomId;
     const result = await studyRoomService.startStudyRoom(
       userId.toString(),
@@ -37,7 +37,7 @@ const startStudyRoom = async (req: Request, res: Response) => {
 // 공부방 일시정지 및 재개
 const pauseStudyRoom = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const roomId = req.params.roomId;
     const { accumulatedTime } = req.body;
     const result = await studyRoomService.pauseStudyRoom(
@@ -54,7 +54,7 @@ const pauseStudyRoom = async (req: Request, res: Response) => {
 // 공부방 종료
 const stopStudyRoom = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const roomId = req.params.roomId;
     const { accumulatedTime } = req.body;
     const result = await studyRoomService.stopStudyRoom(
@@ -71,7 +71,7 @@ const stopStudyRoom = async (req: Request, res: Response) => {
 // 디폴트 공부방 설정 저장
 const setDefaultStudyRoom = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const { roomType, studyMate, assistantTone, cameraAccess } = req.body;
     const result = await studyRoomService.setDefaultStudyRoom(
       userId.toString(),
@@ -93,7 +93,7 @@ const setDefaultStudyRoom = async (req: Request, res: Response) => {
 // 디폴트 공부방 설정을 불러와 바로 실행
 const startDefaultStudyRoom = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
 
     const result = await studyRoomService.startDefaultStudyRoom(
       userId.toString()
@@ -108,7 +108,7 @@ const startDefaultStudyRoom = async (req: Request, res: Response) => {
 // 공부방 정보 조회
 const getStudyRoomInfo = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const roomId = req.params.roomId;
     const roomInfo = await studyRoomService.getStudyRoomInfo(
       userId.toString(),
@@ -139,7 +139,7 @@ const updateFeedback = async (req: Request, res: Response) => {
 // // 뽀모도로 세션 관리 (공부 및 휴식)
 // const managePomodoro = async (req: Request, res: Response) => {
 //   try {
-//     const userId = req.body.userId;
+//     const userId = req.userId;
 //     const roomId = req.params.roomId;
 //     const action = req.body.action;
 
@@ -153,7 +153,7 @@ const updateFeedback = async (req: Request, res: Response) => {
 // // 뽀모도로 진행 상태 조회
 // const getPomodoroStatus = async (req: Request, res: Response) => {
 //   try {
-//     const userId = req.body.userId;
+//     const userId = req.userId;
 //     const roomId = req.params.roomId;
 
 //     const status = await studyRoomService.getPomodoroStatus(userId, roomId);

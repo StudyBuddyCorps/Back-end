@@ -1,14 +1,8 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { calendarService } from "../service";
-import {
-  DateRecordRequest,
-  DateRecordResponse,
-} from "../interface/DTO/calendar/DateRecordDTO";
-import {
-  GetCalendarRequest,
-  GetCalendarResponse,
-} from "../interface/DTO/calendar/GetCalendarDTO";
+import { DateRecordResponse } from "../interface/DTO/calendar/DateRecordDTO";
+import { GetCalendarResponse } from "../interface/DTO/calendar/GetCalendarDTO";
 import { UpdateStudyRecordRequest } from "../interface/DTO/calendar/UpdateStudyRecordDTO";
 
 const createCalendar = async (req: Request, res: Response) => {
@@ -17,7 +11,7 @@ const createCalendar = async (req: Request, res: Response) => {
     const validationErrorMsg = error["errors"][0].msg;
     return res.status(400).json({ error: validationErrorMsg });
   }
-  const userId = req.body.userId;
+  const userId = req.userId;
   try {
     const data = await calendarService.createCalendar(userId);
     if (!data) {
@@ -36,13 +30,11 @@ const getCalendar = async (req: Request, res: Response) => {
     return res.status(400).json({ error: validationErrorMsg });
   }
 
-  const request: GetCalendarRequest = req.body;
+  const userId = req.userId;
+  const { yearMonth } = req.params;
 
   try {
-    const response = await calendarService.getCalendar(
-      request.userId,
-      request.yearMonth
-    );
+    const response = await calendarService.getCalendar(userId, yearMonth);
     if (!response) {
       return res.status(400).json({ success: false, error: "달력 조회 실패" });
     }
@@ -53,8 +45,12 @@ const getCalendar = async (req: Request, res: Response) => {
       dateRecord: response.dateRecord.map((record) => ({
         date: record.date,
         studyRecords: record.studyRecords,
+        totalTime: record.totalTime,
+        feedTime: record.feedTime,
+        sleepCount: record.sleepCount,
+        phoneCount: record.phoneCount,
+        postureCount: record.postureCount,
       })),
-      goal: response.goal,
       monthlyTime: response.monthlyTime,
       weeklyTime: response.weeklyTime,
       dailyTime: response.dailyTime,
@@ -72,12 +68,13 @@ const getDateRecord = async (req: Request, res: Response) => {
     return res.status(400).json({ error: validationErrorMsg });
   }
 
-  const request: DateRecordRequest = req.body;
+  const userId = req.userId;
+  const { yearMonth, date } = req.params;
   try {
     const response = await calendarService.getDateRecord(
-      request.userId,
-      request.yearMonth,
-      request.date
+      userId,
+      yearMonth,
+      Number(date)
     );
     if (!response) {
       // null인 경우
@@ -103,10 +100,12 @@ const updateStudyRecord = async (req: Request, res: Response) => {
     return res.status(400).json({ error: validationErrorMsg });
   }
 
+  const userId = req.userId;
   const request: UpdateStudyRecordRequest = req.body;
+  console.log(request, "updateRecord");
   try {
     const response = await calendarService.updateStudyRecord(
-      request.userId,
+      userId,
       request.yearMonth,
       request.studyRecordId,
       request.date
@@ -122,9 +121,35 @@ const updateStudyRecord = async (req: Request, res: Response) => {
   }
 };
 
+const test = async (req: Request, res: Response) => {
+  const userId = "671285fd22a4d3e2b1aac6f3";
+  const request = req.body;
+  try {
+    const response = await calendarService.testStudyRecord(
+      userId,
+      request.yearMonth,
+      request.date,
+      request.s,
+      request.ph,
+      request.p,
+      request.t,
+      request.f
+    );
+    if (!response) {
+      return res
+        .status(400)
+        .json({ success: false, error: "공부 기록 생성 실패" });
+    }
+    return res.status(200).json({ data: response });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error });
+  }
+};
+
 export default {
   createCalendar,
   getCalendar,
   getDateRecord,
   updateStudyRecord,
+  test,
 };

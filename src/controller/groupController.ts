@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
-import groupService from '../service/groupService';
+import groupService from "../service/groupService";
 import { userService } from "../service";
 
 const createGroup = async (req: Request, res: Response) => {
   try {
-    const { name, description, goalStudyTime} = req.body;
-    const creatorId = req.body.userId;
+    const { name, description, goalStudyTime } = req.body;
+    const creatorId = req.userId;
     if (!creatorId) {
-      return res.status(400).json({ error: 'Creator ID is required' });
+      return res.status(400).json({ error: "Creator ID is required" });
     }
     const group = await groupService.createGroup({
       name,
       description,
       goalStudyTime,
-      members: [{ userId: creatorId, role: 'admin' }]
+      members: [{ userId: creatorId, role: "admin" }],
     });
-    
+
     await userService.addGroupToUser(creatorId, group._id.toString());
 
     return res.status(201).json(group);
@@ -26,7 +26,7 @@ const createGroup = async (req: Request, res: Response) => {
 
 const getMyGroups = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const groups = await groupService.getMyGroups(userId);
     return res.status(200).json(groups);
   } catch (error) {
@@ -38,7 +38,9 @@ const searchGroups = async (req: Request, res: Response) => {
   try {
     const { name } = req.query;
     if (!name) {
-      return res.status(400).json({ error: 'Group name is required for search' });
+      return res
+        .status(400)
+        .json({ error: "Group name is required for search" });
     }
     const groups = await groupService.searchGroupsByName(name as string);
     return res.status(200).json(groups);
@@ -51,10 +53,14 @@ const addMemberToGroup = async (req: Request, res: Response) => {
   try {
     const { groupId, role, memberId } = req.body;
 
-    const updatedGroup = await groupService.addMemberToGroup(groupId, memberId, role);
-    
+    const updatedGroup = await groupService.addMemberToGroup(
+      groupId,
+      memberId,
+      role
+    );
+
     await userService.addGroupToUser(memberId, groupId.toString());
-    
+
     return res.status(200).json(updatedGroup);
   } catch (error) {
     return res.status(500).json({ message: "Error 500" });
@@ -80,7 +86,10 @@ const searchMemberInGroup = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Search term is required" });
     }
 
-    const members = await groupService.searchMembersInGroup(groupId, searchTerm as string);
+    const members = await groupService.searchMembersInGroup(
+      groupId,
+      searchTerm as string
+    );
     return res.status(200).json(members);
   } catch (error) {
     console.error("Error searching member in group:", error);

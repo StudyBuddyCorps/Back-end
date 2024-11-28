@@ -38,7 +38,7 @@ const signUp = async (req: Request, res: Response) => {
 // 유저 정보 조회
 const getUserById = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const user = await userService.getUserByID(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -73,7 +73,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 // 닉네임 중복 확인
 const checkNicknameDuplicate = async (req: Request, res: Response) => {
   const { nickname } = req.body;
-  const userId = req.body.userId;
+  const userId = req.userId;
   try {
     const isDuplicate = await userService.checkNicknameDuplicate(
       nickname,
@@ -128,7 +128,7 @@ const updateNickname = async (req: Request, res: Response) => {
 // 명언 변경
 const updatePhrase = async (req: Request, res: Response) => {
   const { phrase } = req.body;
-  const userId = req.body.userId;
+  const userId = req.userId;
   try {
     await userService.updatePhrase(userId, phrase);
     return res
@@ -144,7 +144,7 @@ const updatePhrase = async (req: Request, res: Response) => {
 // 목표 변경
 const updateGoal = async (req: Request, res: Response) => {
   const { goal } = req.body;
-  const userId = req.body.userId;
+  const userId = req.userId;
   try {
     await userService.updateGoal(userId, goal);
     return res

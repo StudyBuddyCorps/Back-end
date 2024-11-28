@@ -13,11 +13,10 @@ router.post(
 );
 
 router.get(
-  "/",
+  "/:yearMonth",
   authJWT,
   [
-    body("userId").notEmpty().withMessage("유저 아이디가 없습니다."),
-    body("yearMonth")
+    param("yearMonth")
       .notEmpty()
       .withMessage("년도와 월이 없습니다.")
       .isString()
@@ -28,8 +27,8 @@ router.get(
 
 router.get(
   "/dateRecord",
+  authJWT,
   [
-    body("userId").notEmpty().withMessage("유저 아이디가 없습니다."),
     param("yearMonth")
       .notEmpty()
       .withMessage("년도와 월이 없습니다.")
@@ -48,8 +47,8 @@ router.get(
 
 router.put(
   "/dateRecord",
+  authJWT,
   [
-    body("userId").notEmpty().withMessage("유저 아이디가 없습니다."),
     body("yearMonth")
       .notEmpty()
       .withMessage("년도와 월이 없습니다.")
@@ -66,5 +65,7 @@ router.put(
   ],
   calendarController.updateStudyRecord
 );
+
+router.put("/testRecord", calendarController.test);
 
 export default router;

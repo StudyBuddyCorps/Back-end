@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { recordService } from "../service";
-import { CreateStudyRecordRequest } from "../interface/DTO/record/createStudyRecord";
 import { validationResult } from "express-validator";
+import { CreateStudyRecordRequest } from "../interface/DTO/record/CreateStudyRecord";
 
 // final 페이지에 필요한 결과
 const createStudyRecord = async (req: Request, res: Response) => {
