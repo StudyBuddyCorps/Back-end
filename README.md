@@ -9,25 +9,6 @@ Vision을 활용한 실시간 학습 관리 웹어플리케이션, StudyBuddy의
 
 <br><br>
 
-## 😁 Backend Developers
-<table>
-  <tbody>
-    <tr>
-      <td align="center"><img src="https://github.com/user-attachments/assets/558fe1f1-15de-436b-971c-a0d8d44ee371"width="100px;" alt="한지수"/></td>
-      <td align="center"><img src="https://github.com/user-attachments/assets/57b38a95-4dbf-4a95-89b5-8dea210157ac" width="100px;" alt="전의정"/></td>
-    <tr/>
-    <tr>
-        <td align="center">한지수</td><td align="center">전의정</td>
-    </tr>
-    <tr>
-        <td align="center"><a href="https://github.com/Jisu0528">Jisu0528</a></td>
-        <td align="center"><a href="https://github.com/juijeong8324">juijeong8324</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<br><br>
-
 ## 🛠️ Technology Stack
 ![기술스택_백엔드](https://github.com/user-attachments/assets/84e95f5c-81d8-4041-bdba-bd9cd2c44a91)
 
