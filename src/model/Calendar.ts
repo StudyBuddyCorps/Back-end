@@ -18,12 +18,12 @@ const CalendarSchema = new Schema({
       sleepCount: { type: Number, default: 0 },
       phoneCount: { type: Number, default: 0 },
       postureCount: { type: Number, default: 0 },
+      totalAdvice: { type: String, default: "" },
     },
   ],
-  goal: { type: Number, default: 3600 },
   monthlyTime: { type: Number, default: 0 }, // 이번 달 누적 공부 시간
   weeklyTime: { type: Number, default: 0 }, // 이번 주 누적 공부 시간
-  dailyTime: { type: Number, default: 0 }, // 오늘 누적 공부 시간
+  dailyTime: { type: Number, default: 0 }, // 오늘 누적 공부 시간,
 });
 
 export default mongoose.model("Calendar", CalendarSchema);

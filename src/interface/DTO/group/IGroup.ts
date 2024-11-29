@@ -1,6 +1,8 @@
+import mongoose from "mongoose";
+
 export interface GroupMember {
-  userId: string;
-  role: 'admin' | 'member';
+  userId: mongoose.Types.ObjectId;
+  role: "admin" | "member";
 }
 
 export interface GroupData {

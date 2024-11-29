@@ -15,18 +15,26 @@ const UserSchema = new Schema({
   },
   refreshToken: { type: String },
   nickname: { type: String, required: true },
-  profileUrl: { type: String },
+  profileUrl: { type: String, default: "" },
   goal: { type: Number, default: 3600 },
   phrase: PhraseSchema,
   myGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   defaultSettings: {
-    roomType: { type: String, enum: ['normal', 'pomodoro'], default: 'normal' },
+    roomType: { type: String, enum: ["normal", "pomodoro"], default: "normal" },
     studyMate: {
       image: { type: String },
-      voice: { type: String, enum: ['voice1', 'voice2', 'voice3', 'mute'], default: 'mute' }
+      voice: {
+        type: String,
+        enum: ["voice1", "voice2", "voice3", "mute"],
+        default: "mute",
+      },
     },
-    assistantTone: { type: String, enum: ['default', 'genius-nerd', 'scholar', 'fairy'], default: 'default' },
-    cameraAccess: { type: Boolean, default: true }
+    assistantTone: {
+      type: String,
+      enum: ["default", "genius-nerd", "scholar", "fairy"],
+      default: "default",
+    },
+    cameraAccess: { type: Boolean, default: true },
   },
 });
 

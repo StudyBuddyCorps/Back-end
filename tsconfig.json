@@ -5,8 +5,12 @@
     "strict": true, // 엄격한 타입 검사
     "esModuleInterop": true, // ES 모듈 사양 준수해서 CommonJs 모듈 가져오기
     "skipLibCheck": true, // 라이브러리 타입 체크 건너뛸지 여부
-    "outDir": "./dist" // 컴파일 시 Javascript 파일 저장 경로
+    "outDir": "./dist", // 컴파일 시 Javascript 파일 저장 경로,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "paths": {
+      "@types/*": ["./src/types/"]
+    }
   },
-  "include": ["./src/**/*"], // build 시 포함
+  "include": ["./src/**/*", "./src/types/*.d.ts"], // build 시 포함
   "exclude": ["node_modules", "**/*.spec.ts"] // build 시 제외
 }

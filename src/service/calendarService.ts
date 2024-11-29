@@ -1,19 +1,17 @@
 import Calendar from "../model/Calendar";
 import mongoose from "mongoose";
-import userService from "./userService";
 import recordService from "./recordService";
+import { ObjectId } from "mongodb";
 
 const createCalendar = async (userId: mongoose.Types.ObjectId) => {
   try {
     const date = new Date();
     const yearMonth = date.toISOString().slice(0, 7); // YYYY-MM 형식으로 변환
-    const goal = await userService.getGoal(userId);
 
     const newCalendar = new Calendar({
       userId: userId,
       yearMonth: yearMonth,
       dateRecord: [], // 빈 배열로 초기화
-      goal: goal,
       monthlyTime: 0,
       weeklyTime: 0,
       dailyTime: 0,
@@ -51,6 +49,7 @@ const getDateRecord = async (
   date: number
 ) => {
   try {
+    // 해당 년월의 달력 찾기
     const calendar = await Calendar.findOne({
       userId: userId,
       yearMonth: yearMonth,
@@ -59,6 +58,8 @@ const getDateRecord = async (
     if (!calendar) {
       return null;
     }
+
+    // 같은 date record 찾기
     const todayRecord = calendar.dateRecord.find(
       (record) => record.date === date
     );
@@ -74,10 +75,33 @@ const getDateRecord = async (
   }
 };
 
+const getTodayTime = async (
+  userId: mongoose.Types.ObjectId,
+  yearMonth: string,
+  date: number
+) => {
+  try {
+    // 해당 년월의 달력 찾기
+    const calendar = await Calendar.findOne({
+      userId: userId,
+      yearMonth: yearMonth,
+    });
+
+    if (!calendar) {
+      return null;
+    }
+
+    return calendar.dailyTime;
+  } catch (error) {
+    console.error("Error fetching study records:", error);
+    throw error;
+  }
+};
+
 const updateStudyRecord = async (
   userId: mongoose.Types.ObjectId,
   yearMonth: string,
-  studyRecordId: mongoose.Types.ObjectId,
+  studyRecordId: string,
   date: number
 ) => {
   try {
@@ -91,8 +115,7 @@ const updateStudyRecord = async (
     // 1. 년월 존재 확인
     let calendar = await Calendar.findOne({ userId, yearMonth });
     if (!calendar) {
-      console.log("해당 년월의 달력이 존재하지 않습니다.");
-      return null;
+      calendar = await createCalendar(userId); // 없으면 새로 생성
     }
 
     // 2. 날짜 존재 확인
@@ -112,7 +135,7 @@ const updateStudyRecord = async (
       // 없다면 해당 날짜 추가
       calendar.dateRecord.push({
         date: date,
-        studyResult: [studyRecordId],
+        studyRecords: [studyRecordId],
         // 해당 날짜의 총 데이터 추가
         totalTime: studyRecord.totalTime,
         feedTime: studyRecord.feedTime,
@@ -129,7 +152,55 @@ const updateStudyRecord = async (
 
     await calendar.save();
 
-    return true;
+    return calendar;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const testStudyRecord = async (
+  userId: string,
+  yearMonth: string,
+  date: number,
+  s: number,
+  ph: number,
+  p: number,
+  t: number,
+  f: number
+) => {
+  try {
+    // 1. 년월 존재 확인
+    let calendar = await Calendar.findOne({ userId, yearMonth });
+    if (!calendar) {
+      calendar = await createCalendar(new ObjectId(userId)); // 없으면 새로 생성
+    }
+
+    // 2. 날짜 존재 확인
+    const existingRecord = calendar.dateRecord.find(
+      (record) => record.date === date
+    );
+    if (existingRecord) {
+      // 존재한다면
+    } else {
+      // 없다면 해당 날짜 추가
+      calendar.dateRecord.push({
+        date: date,
+        studyResult: [new ObjectId()],
+        // 해당 날짜의 총 데이터 추가
+        totalTime: t,
+        feedTime: f,
+        sleepCount: s,
+        phoneCount: ph,
+        postureCount: p,
+      });
+    }
+
+    // 달력에 보여질 시간
+    calendar.monthlyTime += t;
+
+    await calendar.save();
+
+    return calendar;
   } catch (error) {
     throw error;
   }
@@ -139,5 +210,7 @@ export default {
   createCalendar,
   getCalendar,
   getDateRecord,
+  getTodayTime,
   updateStudyRecord,
+  testStudyRecord,
 };

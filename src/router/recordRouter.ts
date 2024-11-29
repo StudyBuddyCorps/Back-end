@@ -9,7 +9,6 @@ router.post(
   "/final",
   authJWT,
   [
-    body("userId").notEmpty().withMessage("유저 아이디가 없습니다."),
     body("roomId")
       .notEmpty()
       .withMessage("roomId가 없습니다.")
