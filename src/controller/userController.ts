@@ -95,7 +95,8 @@ const checkNicknameDuplicate = async (req: Request, res: Response) => {
 
 // 닉네임 변경
 const updateNickname = async (req: Request, res: Response) => {
-  const { userId, nickname } = req.body;
+  const { nickname } = req.body;
+  const userId = req.userId;
 
   if (!userId || !nickname) {
     return res
