@@ -138,10 +138,22 @@ const googleLogin = async (code: string) => {
     console.error(error);
     throw error;
   }
+
+
+};
+
+const getUserByRefresh = async (refreshToken: string) => {
+  try {
+    return await User.findOne({ refreshToken });
+  } catch (error) {
+    console.error("Failed to find user by refresh token:", error);
+    throw error;
+  }
 };
 
 export default {
   localLogin,
   kakaoLogin,
   googleLogin,
+  getUserByRefresh,
 };
