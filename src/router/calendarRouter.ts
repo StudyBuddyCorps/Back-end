@@ -5,12 +5,7 @@ import { authJWT } from "../middleware";
 
 const router = Router();
 
-router.post(
-  "/",
-  authJWT,
-  [body("userId").notEmpty().withMessage("유저 아이디가 없습니다.")],
-  calendarController.createCalendar
-);
+router.post("/", authJWT, calendarController.createCalendar);
 
 router.get(
   "/:yearMonth",
@@ -56,7 +51,5 @@ router.put(
   ],
   calendarController.updateStudyRecord
 );
-
-router.put("/testRecord", calendarController.test);
 
 export default router;

@@ -6,18 +6,15 @@ import { GetCalendarResponse } from "../interface/DTO/calendar/GetCalendarDTO";
 import { UpdateStudyRecordRequest } from "../interface/DTO/calendar/UpdateStudyRecordDTO";
 
 const createCalendar = async (req: Request, res: Response) => {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
-    const validationErrorMsg = error["errors"][0].msg;
-    return res.status(400).json({ error: validationErrorMsg });
-  }
   const userId = req.userId;
   try {
-    const data = await calendarService.createCalendar(userId);
-    if (!data) {
-      return res.status(400).json({ success: false, error: "달력 생성 실패" });
+    const response: GetCalendarResponse = await calendarService.createCalendar(
+      userId
+    );
+    if (!response) {
+      return res.status(200).json({ success: false, error: "달력 생성 실패" });
     }
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, data: response });
   } catch (error) {
     return res.status(500).json({ success: false, error: error });
   }
@@ -36,7 +33,9 @@ const getCalendar = async (req: Request, res: Response) => {
   try {
     const response = await calendarService.getCalendar(userId, yearMonth);
     if (!response) {
-      return res.status(400).json({ success: false, error: "달력 조회 실패" });
+      return res
+        .status(200)
+        .json({ success: false, error: "달력이 존재하지 않습니다." });
     }
 
     const data: GetCalendarResponse = {
@@ -105,11 +104,7 @@ const getTodayTime = async (req: Request, res: Response) => {
   const { yearMonth } = req.params;
 
   try {
-    const response = await calendarService.getTodayTime(
-      userId,
-      yearMonth,
-      date
-    );
+    const response = await calendarService.getTodayTime(userId, yearMonth);
     if (!response) {
       return res.status(200).json({ success: true, data: 0 });
     }
@@ -138,35 +133,10 @@ const updateStudyRecord = async (req: Request, res: Response) => {
     );
     if (!response) {
       return res
-        .status(400)
+        .status(200)
         .json({ success: false, error: "공부 기록 생성 실패" });
     }
     return res.status(200).json({ success: true });
-  } catch (error) {
-    return res.status(500).json({ success: false, error: error });
-  }
-};
-
-const test = async (req: Request, res: Response) => {
-  const userId = "671285fd22a4d3e2b1aac6f3";
-  const request = req.body;
-  try {
-    const response = await calendarService.testStudyRecord(
-      userId,
-      request.yearMonth,
-      request.date,
-      request.s,
-      request.ph,
-      request.p,
-      request.t,
-      request.f
-    );
-    if (!response) {
-      return res
-        .status(400)
-        .json({ success: false, error: "공부 기록 생성 실패" });
-    }
-    return res.status(200).json({ data: response });
   } catch (error) {
     return res.status(500).json({ success: false, error: error });
   }
@@ -178,5 +148,4 @@ export default {
   getDateRecord,
   getTodayTime,
   updateStudyRecord,
-  test,
 };
