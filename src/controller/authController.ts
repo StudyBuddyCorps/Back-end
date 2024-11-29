@@ -169,10 +169,47 @@ const logout = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Logout failed" });
   }
 };
+
+const refreshAccessToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken; // 클라이언트에서 쿠키로 전달된 `refreshToken`
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token provided" });
+  }
+
+  try {
+    const decodedRefreshToken = jwt.verify(refreshToken);
+
+    if (!decodedRefreshToken || !decodedRefreshToken.ok || decodedRefreshToken.type === -1) {
+      return res.status(401).json({ message: "Refresh token expired. Please log in again." });
+    }
+
+    const user = await authService.getUserByRefresh(refreshToken);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid refresh token" });
+    }
+
+    const newAccessToken = jwt.sign(user._id.toString(), user.nickname);
+
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000, // 15분
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+    return res.status(500).json({ message: "Failed to refresh access token" });
+  }
+};
+
+
 export default {
   login,
   kakaoLogin,
   googleLogin,
   getNewToken,
   logout,
+  refreshAccessToken
 };
