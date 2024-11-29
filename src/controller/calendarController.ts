@@ -93,6 +93,32 @@ const getDateRecord = async (req: Request, res: Response) => {
   }
 };
 
+const getTodayTime = async (req: Request, res: Response) => {
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    const validationErrorMsg = error["errors"][0].msg;
+    return res.status(400).json({ error: validationErrorMsg });
+  }
+  const userId = req.userId;
+  const date = new Date().getDate();
+  const { yearMonth } = req.params;
+
+  try {
+    const response = await calendarService.getTodayTime(
+      userId,
+      yearMonth,
+      date
+    );
+    if (!response) {
+      return res.status(200).json({ success: true, data: 0 });
+    }
+
+    return res.status(200).json({ success: true, data: response });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error });
+  }
+};
+
 const updateStudyRecord = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -102,7 +128,6 @@ const updateStudyRecord = async (req: Request, res: Response) => {
 
   const userId = req.userId;
   const request: UpdateStudyRecordRequest = req.body;
-  console.log(request, "updateRecord");
   try {
     const response = await calendarService.updateStudyRecord(
       userId,
@@ -150,6 +175,7 @@ export default {
   createCalendar,
   getCalendar,
   getDateRecord,
+  getTodayTime,
   updateStudyRecord,
   test,
 };

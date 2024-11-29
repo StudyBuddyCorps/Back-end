@@ -75,6 +75,38 @@ const getDateRecord = async (
   }
 };
 
+const getTodayTime = async (
+  userId: mongoose.Types.ObjectId,
+  yearMonth: string,
+  date: number
+) => {
+  try {
+    // 해당 년월의 달력 찾기
+    const calendar = await Calendar.findOne({
+      userId: userId,
+      yearMonth: yearMonth,
+    });
+
+    if (!calendar) {
+      return null;
+    }
+
+    // 같은 date record 찾기
+    const todayRecord = calendar.dateRecord.find(
+      (record) => record.date === date
+    );
+
+    if (!todayRecord) {
+      return null;
+    }
+
+    return todayRecord.totalTime;
+  } catch (error) {
+    console.error("Error fetching study records:", error);
+    throw error;
+  }
+};
+
 const updateStudyRecord = async (
   userId: mongoose.Types.ObjectId,
   yearMonth: string,
@@ -187,6 +219,7 @@ export default {
   createCalendar,
   getCalendar,
   getDateRecord,
+  getTodayTime,
   updateStudyRecord,
   testStudyRecord,
 };
