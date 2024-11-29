@@ -136,33 +136,6 @@ const updateFeedback = async (req: Request, res: Response) => {
   }
 };
 
-// // 뽀모도로 세션 관리 (공부 및 휴식)
-// const managePomodoro = async (req: Request, res: Response) => {
-//   try {
-//     const userId = req.body.userId;
-//     const roomId = req.params.roomId;
-//     const action = req.body.action;
-
-//     const result = await studyRoomService.managePomodoro(userId, roomId, action);
-//     res.status(200).json(result);
-//   } catch (error) {
-//     res.status(500).json({ message: '뽀모도로 세션 관리에 실패했습니다.', error });
-//   }
-// };
-
-// // 뽀모도로 진행 상태 조회
-// const getPomodoroStatus = async (req: Request, res: Response) => {
-//   try {
-//     const userId = req.body.userId;
-//     const roomId = req.params.roomId;
-
-//     const status = await studyRoomService.getPomodoroStatus(userId, roomId);
-//     res.status(200).json(status);
-//   } catch (error) {
-//     res.status(500).json({ message: '뽀모도로 상태를 가져오는데 실패했습니다.', error });
-//   }
-// };
-
 export default {
   createStudyRoom,
   startStudyRoom,
@@ -170,8 +143,6 @@ export default {
   stopStudyRoom,
   setDefaultStudyRoom,
   getStudyRoomInfo,
-  // managePomodoro,
-  // getPomodoroStatus,
   startDefaultStudyRoom,
   updateFeedback,
 };

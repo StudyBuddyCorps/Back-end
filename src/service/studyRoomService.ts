@@ -163,7 +163,10 @@ const startDefaultStudyRoom = async (userId: string) => {
 
   return {
     message: "디폴트 공부방이 성공적으로 시작되었습니다.",
-    room: startedRoom,
+    room: {
+      _id: startedRoom._id,
+      roomType: defaultSettings.roomType,
+    }
   };
 };
 
