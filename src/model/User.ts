@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
 const PhraseSchema = new Schema({
-  isRandom: { type: Boolean, default: true },
-  content: { type: String, default: "지금 안 하면 언제 할거야?" },
+  isRandom: { type: Boolean },
+  content: { type: String },
 });
 
 const UserSchema = new Schema({
@@ -17,7 +17,10 @@ const UserSchema = new Schema({
   nickname: { type: String, required: true },
   profileUrl: { type: String, default: "" },
   goal: { type: Number, default: 3600 },
-  phrase: PhraseSchema,
+  phrase: {
+    type: PhraseSchema,
+    default: { isRandom: false, content: "지금 안 하면 언제 할거야?" },
+  },
   myGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   defaultSettings: {
     roomType: { type: String, enum: ["normal", "pomodoro"], default: "normal" },
