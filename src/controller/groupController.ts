@@ -115,6 +115,7 @@ const getGroupMembers = async (req: Request, res: Response) => {
           nickname: user.nickname,
           email: user.email,
           role: member.role,
+          imgUrl: user.profileUrl,
         };
       })
     );
