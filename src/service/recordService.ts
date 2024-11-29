@@ -24,7 +24,13 @@ const createStudyRecord = async (_id: string) => {
     const sleepCount = result.sleep_count;
     const phoneCount = result.phone_count;
     const postureCount = result.posture_count;
-    const advice = makeResult.getAdvice(sleepCount, phoneCount, postureCount);
+    const advice = makeResult.getAdvice(
+      sleepCount,
+      phoneCount,
+      postureCount,
+      Number(roomData.accumulatedTime),
+      feedTime
+    );
 
     //3. StudyRecord DB에 추가
     const newStudyRecord = new StudyRecord({

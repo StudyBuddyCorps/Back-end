@@ -50,6 +50,7 @@ const getCalendar = async (req: Request, res: Response) => {
         sleepCount: record.sleepCount,
         phoneCount: record.phoneCount,
         postureCount: record.postureCount,
+        totalAdvice: record.totalAdvice,
       })),
       monthlyTime: response.monthlyTime,
       weeklyTime: response.weeklyTime,

@@ -57,17 +57,35 @@ const getResultFeedBack = (
 const getAdvice = (
   sleepCount: number,
   phoneCount: number,
-  postureCount: number
+  postureCount: number,
+  totalTime: number,
+  feedTime: number
 ) => {
   let advice = "";
+
+  const real = totalTime - feedTime;
+  const focusRatio = (real / totalTime) * 100;
+  if (focusRatio < 50) {
+    advice += "집중 시간이 부족합니다. 집중을 높이기 위한 노력이 필요합니다. ";
+  } else if (focusRatio >= 50 && focusRatio < 80) {
+    advice +=
+      "집중 시간이 괜찮지만, 조금 더 집중할 수 있도록 환경을 조성하는 것이 좋습니다. ";
+  } else {
+    advice +=
+      "집중력이 매우 좋았습니다! 계속해서 이 상태를 유지하는 것이 중요합니다. ";
+  }
+
+  // 각 피드백에 대한 평가가
   if (sleepCount > 0) {
-    advice += "공부 도중에 잠을 자는 것에 주의 하세요.";
+    advice += "공부 중 잠을 자지 않도록 주의하세요. 충분한 수면이 중요합니다. ";
   }
   if (phoneCount > 0) {
-    advice += "핸드폰을 저리 치우십시오.";
+    advice +=
+      "핸드폰을 멀리 두고 공부에 집중하세요. 핸드폰은 집중력을 방해할 수 있습니다. ";
   }
   if (postureCount > 0) {
-    advice += "바른 자세를 유지해야 집중이 더 잘 됩니다.";
+    advice +=
+      "바른 자세를 유지하면 더 오래 집중할 수 있습니다. 자세를 교정하세요. ";
   }
   return advice;
 }; // chatGPT 연결

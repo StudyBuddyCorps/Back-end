@@ -91,16 +91,7 @@ const getTodayTime = async (
       return null;
     }
 
-    // 같은 date record 찾기
-    const todayRecord = calendar.dateRecord.find(
-      (record) => record.date === date
-    );
-
-    if (!todayRecord) {
-      return null;
-    }
-
-    return todayRecord.totalTime;
+    return calendar.dailyTime;
   } catch (error) {
     console.error("Error fetching study records:", error);
     throw error;
